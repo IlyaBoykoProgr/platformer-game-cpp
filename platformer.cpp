@@ -51,6 +51,7 @@ char table[4][10]={
 char person='&';
 char block='%';
 int pos;//позиция персонажа
+char Play[7]= "Play";//в меню когда не играл еще
 
 // \x1b[ <аттрибуты вывода> m
 // \x1b[0m  -сброс настроек вывода
@@ -210,13 +211,16 @@ else if(kbhit()){pos--;}//прыг!(только не по воздуху)
 
 if(pos==3){lose=true;}//падаем-умираем
 }
+system(CLEAR);
+showtable();
 cout<<"\nGAME OVER!!!\n";//когда все кончено...
-sleep(1);
+for(int i; i<5;i++)getch();
+Play[0]='R';Play[1]='e';Play[2]='s';Play[3]='p';Play[4]='a';Play[5]='w';Play[6]='n';//это пишем в меню когда проиграл вместо плей
 }
 
 int main(){
 system(CLEAR);	
-cout<<"MENU:\n1.Play\n2.Options\n3.Help\n";
+cout<<"MENU:\n1."<<Play<<"\n2.Options\n3.Help\n";
 char num=getch();
 switch(num){
 case '1':
