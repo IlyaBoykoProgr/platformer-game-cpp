@@ -22,15 +22,15 @@
     return 1;}
    return 0;}
 
-   char getch(){///////////////////////////////|не
-   struct termios oldt,newt;///////////////////|обра-
-   int ch;/////////////////////////////////////|щайте
-   tcgetattr( STDIN_FILENO, &oldt );///////////|
-   newt = oldt;////////////////////////////////|на
-   newt.c_lflag &= ~( ICANON | ECHO );/////////|это
-   tcsetattr( STDIN_FILENO, TCSANOW, &newt );//|
-   ch = getchar();/////////////////////////////|внима-
-   tcsetattr( STDIN_FILENO, TCSANOW, &oldt );//|ние
+   char getch(){
+   struct termios oldt,newt;
+   int ch;
+   tcgetattr( STDIN_FILENO, &oldt );
+   newt = oldt;
+   newt.c_lflag &= ~( ICANON | ECHO );
+   tcsetattr( STDIN_FILENO, TCSANOW, &newt );
+   ch = getchar();
+   tcsetattr( STDIN_FILENO, TCSANOW, &oldt );
    return ch;}
    
    #define CLEAR "clear"
@@ -52,8 +52,8 @@ char person='&';
 char block='%';
 int pos;//позиция персонажа
 
-// \x1b[ <аттрибуты вывода> m|
-// \x1b[0m  -сброс настроек  |
+// \x1b[ <аттрибуты вывода> m
+// \x1b[0m  -сброс настроек вывода
 
 
 void logic(){
