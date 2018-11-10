@@ -1,0 +1,234 @@
+#include <iostream>//cout & cin
+#ifdef linux
+   #include <termios.h>//getch()
+   #include <unistd.h>//sleep() & else...
+   #include <sys/select.h> //kbhit()
+   #include <fcntl.h>
+   int kbhit(void){
+   struct termios oldt, newt;
+   int ch;
+   int oldf;
+   tcgetattr(STDIN_FILENO, &oldt);
+   newt = oldt;
+   newt.c_lflag &= ~(ICANON | ECHO);
+   tcsetattr(STDIN_FILENO, TCSANOW, &newt);
+   oldf = fcntl(STDIN_FILENO, F_GETFL, 0);
+   fcntl(STDIN_FILENO, F_SETFL, oldf | O_NONBLOCK);
+   ch = getchar();
+   tcsetattr(STDIN_FILENO, TCSANOW, &oldt);
+   fcntl(STDIN_FILENO, F_SETFL, oldf);
+   if(ch != EOF){
+    ungetc(ch, stdin);
+    return 1;}
+   return 0;}
+
+   char getch(){///////////////////////////////|не
+   struct termios oldt,newt;///////////////////|обра-
+   int ch;/////////////////////////////////////|щайте
+   tcgetattr( STDIN_FILENO, &oldt );///////////|
+   newt = oldt;////////////////////////////////|на
+   newt.c_lflag &= ~( ICANON | ECHO );/////////|это
+   tcsetattr( STDIN_FILENO, TCSANOW, &newt );//|
+   ch = getchar();/////////////////////////////|внима-
+   tcsetattr( STDIN_FILENO, TCSANOW, &oldt );//|ние
+   return ch;}
+   
+   #define CLEAR "clear"
+#elif _WIN32
+   #include<conio.h>
+   #define CLEAR "cls"
+#else
+#error Your platform not supported!
+#endif
+   using namespace std;
+
+char table[4][10]={
+{' ',' ',' ',' ',' ',' ',' ',' ',' '},
+{' ',' ',' ',' ',' ',' ',' ',' ',' '},
+{' ',' ',' ',' ',' ',' ',' ',' ',' '},
+{' ',' ',' ',' ',' ',' ',' ',' ',' '}
+};
+char person='&';
+char block='%';
+int pos;//позиция персонажа
+
+// \x1b[ <аттрибуты вывода> m|
+// \x1b[0m  -сброс настроек  |
+
+
+void logic(){
+table[0][0]=table[0][1];
+table[0][1]=table[0][2];
+table[0][2]=table[0][3];
+table[0][3]=table[0][4];
+table[0][4]=table[0][5];//уничтожение не нужного
+table[0][5]=table[0][6];
+table[0][6]=table[0][7];
+table[0][7]=table[0][8];
+table[0][8]=table[0][9];
+table[0][9]=' ';
+table[1][0]=table[1][1];
+table[1][1]=table[1][2];
+table[1][2]=table[1][3];
+table[1][3]=table[1][4];
+table[1][4]=table[1][5];
+table[1][5]=table[1][6];//Перерисовка карты
+table[1][6]=table[1][7];//справа налево.
+table[1][7]=table[1][8];
+table[1][8]=table[1][9];
+table[1][9]=' ';
+table[2][0]=table[2][1];
+table[2][1]=table[2][2];
+table[2][2]=table[2][3];
+table[2][3]=table[2][4];
+table[2][4]=table[2][5];
+table[2][5]=table[2][6];//Перерисовка карты
+table[2][6]=table[2][7];//справа налево.
+table[2][7]=table[2][8];
+table[2][8]=table[2][9];
+table[2][9]=' ';
+table[3][0]=table[3][1];
+table[3][1]=table[3][2];
+table[3][2]=table[3][3];
+table[3][3]=table[3][4];
+table[3][4]=table[3][5];
+table[3][5]=table[3][6];//Перерисовка карты
+table[3][6]=table[3][7];//справа налево.
+table[3][7]=table[3][8];
+table[3][8]=table[3][9];
+table[3][9]=' ';
+}//МНОГО
+
+void showtable(){//показ текущей карты
+cout<<"___________\n";//потолок
+cout<<table[0][0]<<table[0][1]<<table[0][2]<<table[0][3]<<table[0][4]<<table[0][5]<<table[0][6]<<table[0][7]<<table[0][8]<<table[0][9]<<"\n";
+cout<<table[1][0]<<table[1][1]<<table[1][2]<<table[1][3]<<table[1][4]<<table[1][5]<<table[1][6]<<table[1][7]<<table[1][8]<<table[1][9]<<"\n";
+cout<<table[2][0]<<table[2][1]<<table[2][2]<<table[2][3]<<table[2][4]<<table[2][5]<<table[2][6]<<table[2][7]<<table[2][8]<<table[2][9]<<"\n";
+cout<<table[3][0]<<table[3][1]<<table[3][2]<<table[3][3]<<table[3][4]<<table[3][5]<<table[3][6]<<table[3][7]<<table[3][8]<<table[3][9]<<"\n";
+cout<<"==========\n";//это 'лава'
+}//по другому мой комп не считывает.Прямо надо.
+
+void options(){
+cout<<"OPTIONS:\n background:\n(1.black,2.green,3.yellow,4.blue,5.white\n6.red,7.purple,8.light-blue)\n";
+
+char otvet=getch();
+switch(otvet){
+case '1':
+ cout<<"\x1b[40m";break;
+case '2':
+ cout<<"\x1b[42m";break;
+case '3':
+ cout<<"\x1b[43m";break;
+case '4':
+ cout<<"\x1b[44m";break;
+case '5':
+ cout<<"\x1b[47;30m";break;
+case '6':
+ cout<<"\x1b[41m";break;
+case '7':
+ cout<<"\x1b[45m";break;
+case '8':
+ cout<<"\x1b[46m";break;
+default:
+system(CLEAR);
+cout<<"ERROR";
+sleep(1);
+return;
+ }//                                  настройки фона
+system(CLEAR);
+
+cout<<"OPTIONS:\n foreground:\n(1.black,2.green,3.yellow,4.blue,5.white\n6.red,7.purple,8.light-blue)\n";
+
+otvet=getch();
+switch(otvet){
+case '1':
+ cout<<"\x1b[30m";break;
+case '2':
+ cout<<"\x1b[32m";break;
+case '3':
+ cout<<"\x1b[33m";break;
+case '4':
+ cout<<"\x1b[34m";break;
+case '5':
+ cout<<"\x1b[37m";break;
+case '6':
+ cout<<"\x1b[31m";break;
+case '7':
+ cout<<"\x1b[35m";break;
+case '8':
+ cout<<"\x1b[36m";break;
+default:
+system(CLEAR);
+cout<<"ERROR";
+sleep(1);
+return;
+ }//                                  настройки букв
+
+system(CLEAR);
+cout<<"OPTIONS:\n your persone:\n(enter symbol)\n";
+cin>>person;
+sleep(1);
+//                                   настройка персонажа
+
+system(CLEAR);
+cout<<"OPTIONS:\n blocks:\n(enter symbol)\n";
+cin>>block;
+sleep(1);
+//                                  настройка формы блоков
+}
+
+void play(){//                        ИГРА
+cout<<"3\n";        //|
+cout<<"2\n";        //|красивое
+cout<<"1\n";        //|начало       
+cout<<"start!!!\n"; //|
+sleep(1);           //|
+system(CLEAR);      //|
+
+table[3][0]=block;table[3][1]=block;table[3][2]=block;table[3][3]=block; //
+table[3][4]=block;table[3][5]=block;table[3][6]=block;table[3][7]=block; //начало карты
+table[3][8]=block;table[3][9]=block;                                     //
+
+bool lose=false;//в ином случае проиграешь
+pos=0;
+
+while(lose==false){
+
+table[pos][0]=person;//появление персонажа
+
+sleep(1);
+system(CLEAR);//основная логика
+showtable();
+if(table[pos][1]==block){lose=true;}//врезался-умер
+logic();
+
+int flat=rand()%3+1; //|где блок ставить?
+table[flat][9]=block;//|а теперь ставим.
+
+if(table[pos+1][0]==' '){pos++;}//падаем
+else if(kbhit()){pos--;}//прыг!(только не по воздуху)
+
+if(pos==3){lose=true;}//падаем-умираем
+}
+cout<<"\nGAME OVER!!!\n";//когда все кончено...
+sleep(1);
+}
+
+int main(){
+system(CLEAR);	
+cout<<"MENU:\n1.Play\n2.Options\n3.Help\n";
+char num=getch();
+switch(num){
+case '1':
+ system(CLEAR);play();break;
+case '2':
+ system(CLEAR);options();break;
+case '3':
+ system(CLEAR);cout<<"HELP:\nThis game is 'platformer'.You need jump trough the abysses & don't birn into a block.Any key to jump, but not keys with numbers.\n";
+getch();break;
+default:
+main();
+ break;
+ }
+main();
+}
