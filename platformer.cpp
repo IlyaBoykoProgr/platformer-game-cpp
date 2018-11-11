@@ -33,10 +33,13 @@
    tcsetattr( STDIN_FILENO, TCSANOW, &oldt );
    return ch;}
    
-   #define CLEAR "clear"
+   #define WAIT sleep(1);
+   #define CLEAR system("clear");
 #elif _WIN32
    #include<conio.h>
-   #define CLEAR "cls"
+   #include<windows.h>
+   #define CLEAR for(int i=0;i<100;i++)cout<<"\n";
+   #define WAIT Sleep(1);
 #else
 #error Your platform not supported!
 #endif
@@ -131,12 +134,12 @@ case '7':
 case '8':
  cout<<"\x1b[46m";break;
 default:
-system(CLEAR);
+CLEAR
 cout<<"ERROR";
-sleep(1);
+WAIT
 return;
  }//                                  настройки фона
-system(CLEAR);
+CLEAR
 
 cout<<"OPTIONS:\n foreground:\n(1.black,2.green,3.yellow,4.blue,5.white\n6.red,7.purple,8.light-blue)\n";
 
@@ -159,22 +162,22 @@ case '7':
 case '8':
  cout<<"\x1b[36m";break;
 default:
-system(CLEAR);
+CLEAR
 cout<<"ERROR";
-sleep(1);
+WAIT
 return;
  }//                                  настройки букв
 
-system(CLEAR);
+CLEAR
 cout<<"OPTIONS:\n your persone:\n(enter symbol)\n";
 cin>>person;
-sleep(1);
+WAIT
 //                                   настройка персонажа
 
-system(CLEAR);
+CLEAR
 cout<<"OPTIONS:\n blocks:\n(enter symbol)\n";
 cin>>block;
-sleep(1);
+WAIT
 //                                  настройка формы блоков
 }
 
@@ -183,8 +186,8 @@ cout<<"3\n";        //|
 cout<<"2\n";        //|красивое
 cout<<"1\n";        //|начало       
 cout<<"start!!!\n"; //|
-sleep(1);           //|
-system(CLEAR);      //|
+WAIT           //|
+CLEAR      //|
 
 table[3][0]=block;table[3][1]=block;table[3][2]=block;table[3][3]=block; //
 table[3][4]=block;table[3][5]=block;table[3][6]=block;table[3][7]=block; //начало карты
@@ -197,8 +200,8 @@ while(lose==false){
 
 table[pos][0]=person;//появление персонажа
 
-sleep(1);
-system(CLEAR);//основная логика
+WAIT
+CLEAR//основная логика
 showtable();
 if(table[pos][1]==block){lose=true;}//врезался-умер
 logic();
@@ -211,7 +214,7 @@ else if(kbhit()){pos--;}//прыг!(только не по воздуху)
 
 if(pos==3){lose=true;}//падаем-умираем
 }
-system(CLEAR);
+CLEAR
 showtable();
 cout<<"\nGAME OVER!!!\n";//когда все кончено...
 for(int i; i<5;i++)getch();
@@ -219,16 +222,16 @@ Play[0]='R';Play[1]='e';Play[2]='s';Play[3]='p';Play[4]='a';Play[5]='w';Play[6]=
 }
 
 int main(){
-system(CLEAR);	
+CLEAR	
 cout<<"MENU:\n1."<<Play<<"\n2.Options\n3.Help\n";
 char num=getch();
 switch(num){
 case '1':
- system(CLEAR);play();break;
+ CLEAR play();break;
 case '2':
- system(CLEAR);options();break;
+ CLEAR options();break;
 case '3':
- system(CLEAR);cout<<"HELP:\nThis game is 'platformer'.You need jump trough the abysses & don't birn into a block.Any key to jump, but not keys with numbers.\n";
+ CLEAR cout<<"HELP:\nThis game is 'platformer'.You need jump trough the abysses & don't birn into a block.Any key to jump, but not keys with numbers.\n";
 getch();break;
 default:
 main();
