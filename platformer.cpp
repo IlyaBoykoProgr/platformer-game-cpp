@@ -1,6 +1,6 @@
 #include <iostream>//cout & cin
 #ifdef linux
-   #include <termios.h>//getch()
+   //getch()
    #include <unistd.h>//sleep() & else...
    #include <sys/select.h> //kbhit()
    #include <fcntl.h>
@@ -201,10 +201,10 @@ while(lose==false){
 table[pos][0]=person;//появление персонажа
 
 WAIT
-CLEAR//основная логика
-showtable();
+CLEAR                 //}основная логика
+showtable();          //}
+logic();              //}
 if(table[pos][1]==block){lose=true;}//врезался-умер
-logic();
 
 int flat=rand()%3+1; //|где блок ставить?
 table[flat][9]=block;//|а теперь ставим.
