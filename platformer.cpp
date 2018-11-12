@@ -219,7 +219,11 @@ if(pos==3){lose=true;}//падаем-умираем
 CLEAR
 showtable();
 cout<<"\nGAME OVER!!!\n";//когда все кончено...
-for(int i; i<5;i++)getch();
+#ifdef linux
+for(int i; i<10;i++)getch();
+#elif _WIN32
+MessageBox(NULL,"you lose!","Message",MB_OK|MB_ICONSTOP);
+#endif
 Play[0]='R';Play[1]='e';Play[2]='s';Play[3]='p';Play[4]='a';Play[5]='w';Play[6]='n';//это пишем в меню когда проиграл вместо плей
 return score;//cчет возвращаем
 }
