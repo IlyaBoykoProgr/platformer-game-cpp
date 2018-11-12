@@ -1,9 +1,9 @@
 #include <iostream>//cout & cin
 #ifdef linux
-   //getch()
    #include <unistd.h>//sleep() & else...
    #include <sys/select.h> //kbhit()
    #include <fcntl.h>
+   #include <termios.h>
    int kbhit(void){
    struct termios oldt, newt;
    int ch;
@@ -181,22 +181,23 @@ WAIT
 //                                  настройка формы блоков
 }
 
-void play(){//                        ИГРА
+int play(){//                        ИГРА
 cout<<"3\n";        //|
 cout<<"2\n";        //|красивое
 cout<<"1\n";        //|начало       
 cout<<"start!!!\n"; //|
-WAIT           //|
-CLEAR      //|
+WAIT                //|
+CLEAR               //|
 
 table[3][0]=block;table[3][1]=block;table[3][2]=block;table[3][3]=block; //
 table[3][4]=block;table[3][5]=block;table[3][6]=block;table[3][7]=block; //начало карты
 table[3][8]=block;table[3][9]=block;                                     //
 
 bool lose=false;//в ином случае проиграешь
-pos=0;
+pos=0;//начальная позиция
+int score=0;
 
-while(lose==false){
+while(!lose){
 
 table[pos][0]=person;//появление персонажа
 
@@ -210,7 +211,8 @@ int flat=rand()%3+1; //|где блок ставить?
 table[flat][9]=block;//|а теперь ставим.
 
 if(table[pos+1][0]==' '){pos++;}//падаем
-else if(kbhit()){pos--;}//прыг!(только не по воздуху)
+else if(kbhit()){pos--;score++;}//прыг!(только не по воздуху).пусть за прыжок дополнительные очки
+score++;//здесь мы прошли блок,счет растет
 
 if(pos==3){lose=true;}//падаем-умираем
 }
@@ -219,6 +221,7 @@ showtable();
 cout<<"\nGAME OVER!!!\n";//когда все кончено...
 for(int i; i<5;i++)getch();
 Play[0]='R';Play[1]='e';Play[2]='s';Play[3]='p';Play[4]='a';Play[5]='w';Play[6]='n';//это пишем в меню когда проиграл вместо плей
+return score;//cчет возвращаем
 }
 
 int main(){
@@ -227,7 +230,7 @@ cout<<"MENU:\n1."<<Play<<"\n2.Options\n3.Help\n";
 char num=getch();
 switch(num){
 case '1':
- CLEAR play();break;
+ CLEAR cout<<"\nYour score:"<<play();break;
 case '2':
  CLEAR options();break;
 case '3':
