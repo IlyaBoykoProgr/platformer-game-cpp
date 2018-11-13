@@ -1,4 +1,6 @@
 #include <iostream>//cout & cin
+#include <cstdlib>
+#include <stdio.h>
 #ifdef linux
    #include <unistd.h>//sleep() & else...
    #include <sys/select.h> //kbhit()
@@ -38,12 +40,12 @@
 #elif _WIN32
    #include<conio.h>
    #include<windows.h>
-   #define CLEAR for(int i=0;i<100;i++)cout<<"\n";
    #define WAIT Sleep(1);
+   #define CLEAR for(int i=0;i<30;i++)cout<<"\n";
 #else
 #error Your platform not supported!
 #endif
-   using namespace std;
+using namespace std;
 
 char table[4][10]={
 {' ',' ',' ',' ',' ',' ',' ',' ',' '},
