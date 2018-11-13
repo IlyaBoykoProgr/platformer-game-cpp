@@ -220,9 +220,9 @@ if(pos==3){lose=true;}//падаем-умираем
 }
 CLEAR
 showtable();
-cout<<"\nGAME OVER!!!\n";//когда все кончено...
+cout<<"\nGAME OVER!\npress '+' to exit.";//когда все кончено...
 #ifdef linux
-for(int i; i<10;i++)getch();
+while(!(getch()=='+'));
 #elif _WIN32
 MessageBox(NULL,"you lose!","Message",MB_OK|MB_ICONSTOP);
 #endif
@@ -234,17 +234,16 @@ int main(){
 CLEAR	
 cout<<"MENU:\n1."<<Play<<"\n2.Options\n3.Help\n";
 char num=getch();
-switch(num){
-case '1':
- CLEAR cout<<"\nYour score:"<<play();break;
-case '2':
- CLEAR options();break;
-case '3':
- CLEAR cout<<"HELP:\nThis game is 'platformer'.You need jump trough the abysses & don't birn into a block.Any key to jump, but not keys with numbers.\n";
-getch();break;
-default:
-main();
- break;
- }
+if(num=='1'){
+   CLEAR 
+   int a=play();
+   cout<<"Your score: "<<a<<"\n";
+}else if(num=='2'){
+   CLEAR 
+   options();
+}else if(num=='3'){
+   CLEAR 
+   cout<<"HELP:\nThis game is 'platformer'.You need jump trough the abysses & don't birn into a block.Any key to jump, but not keys with numbers.\n";
+   getch();}
 main();
 }
