@@ -203,7 +203,7 @@ while(!lose){
 
 table[pos][0]=person;//появление персонажа
 
-WAIT
+WAIT                  //}
 CLEAR                 //}основная логика
 showtable();          //}
 logic();              //}
@@ -230,20 +230,22 @@ Play[0]='R';Play[1]='e';Play[2]='s';Play[3]='p';Play[4]='a';Play[5]='w';Play[6]=
 return score;//cчет возвращаем
 }
 
-int main(){
-CLEAR	
+int main(){	
 cout<<"MENU:\n1."<<Play<<"\n2.Options\n3.Help\n";
 char num=getch();
 if(num=='1'){
    CLEAR 
    int a=play();
    cout<<"Your score: "<<a<<"\n";
+   WAIT CLEAR
 }else if(num=='2'){
    CLEAR 
    options();
+   CLEAR
 }else if(num=='3'){
    CLEAR 
    cout<<"HELP:\nThis game is 'platformer'.You need jump trough the abysses & don't birn into a block.Any key to jump, but not keys with numbers.\n";
-   getch();}
+   getch();
+   CLEAR }
 main();
 }
