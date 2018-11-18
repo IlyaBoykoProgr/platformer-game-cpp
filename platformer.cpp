@@ -6,23 +6,36 @@
    #include <sys/select.h> //kbhit()
    #include <fcntl.h>
    #include <termios.h>
-   int kbhit(void){
-   struct termios oldt, newt;
-   int ch;
-   int oldf;
-   tcgetattr(STDIN_FILENO, &oldt);
-   newt = oldt;
-   newt.c_lflag &= ~(ICANON | ECHO);
-   tcsetattr(STDIN_FILENO, TCSANOW, &newt);
-   oldf = fcntl(STDIN_FILENO, F_GETFL, 0);
-   fcntl(STDIN_FILENO, F_SETFL, oldf | O_NONBLOCK);
-   ch = getchar();
-   tcsetattr(STDIN_FILENO, TCSANOW, &oldt);
-   fcntl(STDIN_FILENO, F_SETFL, oldf);
-   if(ch != EOF){
-    ungetc(ch, stdin);
-    return 1;}
-   return 0;}
+   
+   void nonblock(int state)
+   {
+    struct termios ttystate;
+    tcgetattr(STDIN_FILENO, &ttystate);
+
+    if ( state == 1)
+    {
+        ttystate.c_lflag &= (~ICANON & ~ECHO); //Not display character
+        ttystate.c_cc[VMIN] = 1;
+    }
+    else if (state == 0)
+    {
+        ttystate.c_lflag |= ICANON;
+    }
+    tcsetattr(STDIN_FILENO, TCSANOW, &ttystate);
+   }
+  
+   int kbhit()
+   {nonblock(1);
+   struct timeval tv;
+   fd_set fds;
+   tv.tv_sec = 0;
+   tv.tv_usec = 0;
+   FD_ZERO(&fds);
+   FD_SET(STDIN_FILENO, &fds);
+   select(STDIN_FILENO+1, &fds, NULL, NULL, &tv);
+   return FD_ISSET(STDIN_FILENO, &fds);
+   nonblock(0);
+   }
 
    char getch(){
    struct termios oldt,newt;
@@ -37,10 +50,10 @@
    
    #define WAIT sleep(1);
    #define CLEAR system("clear");
-#elif _WIN32
+#elif WINDOWS
    #include<conio.h>
    #include<windows.h>
-   #define WAIT Sleep(1);
+   #define WAIT Sleep(500);
    #define CLEAR for(int i=0;i<30;i++)cout<<"\n";
 #else
 #error Your platform not supported!
@@ -115,10 +128,15 @@ cout<<"==========\n";//это 'лава'
 }//по другому мой комп не считывает.Прямо надо.
 
 void options(){
-cout<<"OPTIONS:\n background:\n(1.black,2.green,3.yellow,4.blue,5.white\n6.red,7.purple,8.light-blue)\n";
+cout<<"OPTIONS:\n1.background\n2.foreground\n3.your person\n4.blocks\n\nwarning: 1&2 not supported on Windows!";
+char t=getch();
+CLEAR
+if(t=='1'){
 
-char otvet=getch();
-switch(otvet){
+cout<<"OPTIONS:\n background:\n(1.black,2.green,3.yellow,4.blue,5.white\n6.red,7.purple,8.light-blue)\n";
+//                                  настройки фона
+char answer=getch();
+switch(answer){
 case '1':
  cout<<"\x1b[40m";break;
 case '2':
@@ -140,13 +158,14 @@ CLEAR
 cout<<"ERROR";
 WAIT
 return;
- }//                                  настройки фона
-CLEAR
+ }
+ 
+ }else if(t=='2'){
 
 cout<<"OPTIONS:\n foreground:\n(1.black,2.green,3.yellow,4.blue,5.white\n6.red,7.purple,8.light-blue)\n";
-
-otvet=getch();
-switch(otvet){
+ //                                  настройки букв
+char answer=getch();
+switch(answer){
 case '1':
  cout<<"\x1b[30m";break;
 case '2':
@@ -168,19 +187,19 @@ CLEAR
 cout<<"ERROR";
 WAIT
 return;
- }//                                  настройки букв
-
-CLEAR
+ }
+ //                                   настройка персонажа
+}else if(t=='3'){
 cout<<"OPTIONS:\n your persone:\n(enter symbol)\n";
 cin>>person;
 WAIT
-//                                   настройка персонажа
-
-CLEAR
+}else if(t=='4'){
 cout<<"OPTIONS:\n blocks:\n(enter symbol)\n";
 cin>>block;
-WAIT
-//                                  настройка формы блоков
+WAIT//                                  настройка формы блоков
+}else{
+options();
+return;}
 }
 
 int play(){//                        ИГРА
@@ -220,9 +239,9 @@ if(pos==3){lose=true;}//падаем-умираем
 }
 CLEAR
 showtable();
-cout<<"\nGAME OVER!\npress '+' to exit.";//когда все кончено...
 #ifdef linux
-while(!(getch()=='+'));
+cout<<"\nGAME OVER!\npress 'q' to exit.";//когда все кончено...
+while(!(getch()=='q'));
 #elif _WIN32
 MessageBox(NULL,"you lose!","Message",MB_OK|MB_ICONSTOP);
 #endif
@@ -230,22 +249,21 @@ Play[0]='R';Play[1]='e';Play[2]='s';Play[3]='p';Play[4]='a';Play[5]='w';Play[6]=
 return score;//cчет возвращаем
 }
 
-int main(){	
-cout<<"MENU:\n1."<<Play<<"\n2.Options\n3.Help\n";
+int main(){
+CLEAR	
+cout<<"PLATFORMER:\n\nMENU:\n1."<<Play<<"\n2.Options\n3.Help\n";
 char num=getch();
 if(num=='1'){
    CLEAR 
    int a=play();
    cout<<"Your score: "<<a<<"\n";
-   WAIT CLEAR
+   WAIT
 }else if(num=='2'){
    CLEAR 
    options();
-   CLEAR
 }else if(num=='3'){
    CLEAR 
-   cout<<"HELP:\nThis game is 'platformer'.You need jump trough the abysses & don't birn into a block.Any key to jump, but not keys with numbers.\n";
-   getch();
-   CLEAR }
+   cout<<"HELP:\nThis game is 'platformer'.You need jump trough the abysses & don't birn into a block.Space to jump.\n";
+   getch(); }
 main();
 }
