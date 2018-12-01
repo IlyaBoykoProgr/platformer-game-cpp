@@ -1,3 +1,3 @@
-# platformer-game-cpp
+# labirinth-game-cpp
 fun game on console in UNIX &amp; WINDOWS
-name: labirinth. I want to do it more funny!
+I want to do it more funny!
