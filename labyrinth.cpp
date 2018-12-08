@@ -4,9 +4,8 @@
 #include<stdio.h>
 #include<termios.h>
 #include<unistd.h>
-#define HEIGHT 50 ///любое кол-во строк
-#define WIDTH 100 ///любое кол-во длины строки
-#define WALL '0' ///значок стены
+#define HEIGHT rand()%200 ///любое кол-во строк
+#define WIDTH HEIGHT*2 ///любое кол-во длины строки
 using namespace std;
 bool deadend(int, int, int**, int, int); // Вспомогательная функция, определяет тупики
 void visual(int**, int, int); // Изображение результата с помощью консольной графики
@@ -15,30 +14,22 @@ void mazemake(int**, int, int); // Собственно алгоритм
 
 class person{
  int x,y;
- bool iswall(int X, int Y,int** maze){
- if(maze[X][Y]==WALL)return 1;
- else return 0;
- }
  public:
   person(){start();}
-  void start(){y=1;x=HEIGHT-3;}
+  void start(){y=3;x=3;}
   int getx(){return x;}
   int gety(){return y;}
   void up(int** maze){
-  x--;y++;
-  if(iswall(x,y,maze)){x++;y--;}
+  x-=2;y+=2;
   }
   void down(int** maze){
-  x++;y--;
-  if(iswall(x,y,maze)){x--;y++;}
+  x+=2;y-=2;
   }
   void left(int** maze){
-  y--;x--;
-  if(iswall(x,y,maze)){y++;}
+  y-=2;x-=2;
   }
   void right(int** maze){
-  y++;
-  if(iswall(x,y,maze)){y--;x--;}
+  y+=2;
   }
 };
 person Iam;
@@ -58,12 +49,15 @@ int main(){
 Iam.start();
 srand((unsigned)time(NULL));
 int height = HEIGHT, width = WIDTH;
-if(height%2==0)height--;
-if(width%2==0)width--;
+if(height%2==0)height++;
+if(width%2==0)width++;
+if(height<6)height=7;
+if(width<6)width=7;
 int** maze = new int*[height];
 for(int i = 0; i < height; i++) maze[i] = new int[width];
 mazemake(maze, height, width);
 visual(maze,height,width);
+cout<<"\n press F5 to new labyrinth. w,a,s,d are move.";
 if(getch()=='\E'&&getch()=='['&&getch()=='1'&&getch()=='5'&&getch()=='~')main();
 while(1){
  switch(getch()){
@@ -77,7 +71,7 @@ while(1){
  Iam.right(maze);
  }
  visual(maze,height,width);
- if(Iam.getx()==1&&Iam.gety()==1){
+ if(Iam.getx()==height-2&&Iam.gety()==width-2){
  cout<<"\nYOU WON!!!\nPRESS ANY KEY TO RESTART...";
  getch();
  main();
@@ -121,11 +115,11 @@ void visual(int** maze, int height, int width){
  system("clear");
 	for(int i = 0; i < height; i++){
 		for(int j = 0; j < width; j++){
-		    if(i==1&&j==1){cout<<"\E[41m \E[0m";continue;}
+		    if(i==height-2&&j==width-2){cout<<"\E[41m \E[0m";continue;}
 		    if(Iam.getx()==i && Iam.gety()==j){
 		    cout<<"\E[42m \E[0m";continue;}
 			switch(maze[i][j]){
-				case 0: cout<<"\E[47m"<<WALL<<"\E[0m"; break;
+				case 0: cout<<"\E[47m0\E[0m"; break;
 				case 1: cout<<" "; break;
 			}
         }
