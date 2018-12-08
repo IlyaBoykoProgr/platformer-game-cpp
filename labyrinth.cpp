@@ -6,7 +6,7 @@
 #include<unistd.h>
 #define HEIGHT 50 ///любое кол-во строк
 #define WIDTH 100 ///любое кол-во длины строки
-#define WALL '%' ///значок стены
+#define WALL '0' ///значок стены
 using namespace std;
 bool deadend(int, int, int**, int, int); // Вспомогательная функция, определяет тупики
 void visual(int**, int, int); // Изображение результата с помощью консольной графики
@@ -15,14 +15,31 @@ void mazemake(int**, int, int); // Собственно алгоритм
 
 class person{
  int x,y;
+ bool iswall(int X, int Y,int** maze){
+ if(maze[X][Y]==WALL)return 1;
+ else return 0;
+ }
  public:
-  person(){y=1;x=HEIGHT-2;}
+  person(){start();}
+  void start(){y=1;x=HEIGHT-3;}
   int getx(){return x;}
   int gety(){return y;}
-  void up(){x--;y++;}
-  void down(){x++;y--;}
-  void left(){y--;x--;}
-  void right(){y++;}
+  void up(int** maze){
+  x--;y++;
+  if(iswall(x,y,maze)){x++;y--;}
+  }
+  void down(int** maze){
+  x++;y--;
+  if(iswall(x,y,maze)){x--;y++;}
+  }
+  void left(int** maze){
+  y--;x--;
+  if(iswall(x,y,maze)){y++;}
+  }
+  void right(int** maze){
+  y++;
+  if(iswall(x,y,maze)){y--;x--;}
+  }
 };
 person Iam;
 
@@ -38,6 +55,7 @@ tcsetattr( STDIN_FILENO, TCSANOW, &oldt );
 return ch;}
 
 int main(){
+Iam.start();
 srand((unsigned)time(NULL));
 int height = HEIGHT, width = WIDTH;
 if(height%2==0)height--;
@@ -50,20 +68,19 @@ if(getch()=='\E'&&getch()=='['&&getch()=='1'&&getch()=='5'&&getch()=='~')main();
 while(1){
  switch(getch()){
   case 'w':
- Iam.up();
+ Iam.up(maze);
   case 'a':
- Iam.left();
+ Iam.left(maze);
   case 's':
- Iam.down();
+ Iam.down(maze);
   case 'd':
- Iam.right();
-  default:
-  break;
+ Iam.right(maze);
  }
  visual(maze,height,width);
- if(Iam.getx()==height-2&&Iam.gety()==width-2){
- system("clear");
- cout<<"\nYOU WON!!!";
+ if(Iam.getx()==1&&Iam.gety()==1){
+ cout<<"\nYOU WON!!!\nPRESS ANY KEY TO RESTART...";
+ getch();
+ main();
  }
 }
 }
@@ -104,16 +121,17 @@ void visual(int** maze, int height, int width){
  system("clear");
 	for(int i = 0; i < height; i++){
 		for(int j = 0; j < width; j++){
+		    if(i==1&&j==1){cout<<"\E[41m \E[0m";continue;}
 		    if(Iam.getx()==i && Iam.gety()==j){
-		    cout<<"\E[32m$\E[0m";continue;}
+		    cout<<"\E[42m \E[0m";continue;}
 			switch(maze[i][j]){
-				case 0: cout<<WALL; break;
+				case 0: cout<<"\E[47m"<<WALL<<"\E[0m"; break;
 				case 1: cout<<" "; break;
 			}
         }
 		cout<<endl;
     }
-    cout<<Iam.getx()<<' '<<Iam.gety();
+    //cout<<Iam.getx()<<' '<<Iam.gety();
 }
 
 void mazemake(int** maze, int height, int width){
