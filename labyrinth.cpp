@@ -4,11 +4,11 @@
 #include<stdio.h>
 #include<termios.h>
 #include<unistd.h>
-#define HEIGHT rand()%200 ///любое кол-во строк
+#define HEIGHT rand()%50 ///любое кол-во строк
 #define WIDTH HEIGHT*2 ///любое кол-во длины строки
 using namespace std;
 bool deadend(int, int, int**, int, int); // Вспомогательная функция, определяет тупики
-void visual(int**, int, int); // Изображение результата с помощью консольной графики
+void visual(int**, int, int, int); // Изображение результата с помощью консольной графики
 void mazemake(int**, int, int); // Собственно алгоритм
 
 
@@ -46,6 +46,7 @@ tcsetattr( STDIN_FILENO, TCSANOW, &oldt );
 return ch;}
 
 int main(){
+int c=rand()%4;
 Iam.start();
 srand((unsigned)time(NULL));
 int height = HEIGHT, width = WIDTH;
@@ -56,7 +57,7 @@ if(width<6)width=7;
 int** maze = new int*[height];
 for(int i = 0; i < height; i++) maze[i] = new int[width];
 mazemake(maze, height, width);
-visual(maze,height,width);
+visual(maze,height,width,c);
 cout<<"\n press F5 to new labyrinth. w,a,s,d are move.";
 if(getch()=='\E'&&getch()=='['&&getch()=='1'&&getch()=='5'&&getch()=='~')main();
 while(1){
@@ -70,7 +71,7 @@ while(1){
   case 'd':
  Iam.right(maze);
  }
- visual(maze,height,width);
+ visual(maze,height,width,c);
  if(Iam.getx()==height-2&&Iam.gety()==width-2){
  cout<<"\nYOU WON!!!\nPRESS ANY KEY TO RESTART...";
  getch();
@@ -111,7 +112,7 @@ bool deadend(int x, int y, int** maze, int height, int width){
 	return 0;
 }
 
-void visual(int** maze, int height, int width){
+void visual(int** maze, int height, int width,int c){
  system("clear");
 	for(int i = 0; i < height; i++){
 		for(int j = 0; j < width; j++){
@@ -119,7 +120,18 @@ void visual(int** maze, int height, int width){
 		    if(Iam.getx()==i && Iam.gety()==j){
 		    cout<<"\E[42m \E[0m";continue;}
 			switch(maze[i][j]){
-				case 0: cout<<"\E[47m0\E[0m"; break;
+				case 0:
+				switch(c){
+				 case 0:
+				 cout<<"\E[47m";break;
+				 case 1:
+				 cout<<"\E[43;33m";break;
+				 case 2:
+				 cout<<"\E[44;34m";break;
+				 case 3:
+				 cout<<"\E[45;35m";break;
+				}
+				cout<<"0\E[0m"; break;
 				case 1: cout<<" "; break;
 			}
         }
