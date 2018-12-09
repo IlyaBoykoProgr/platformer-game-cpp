@@ -2,9 +2,10 @@
 #include<cstdlib>
 #include<ctime>
 #include<stdio.h>
+#include<stdlib.h>
 #include<termios.h>
 #include<unistd.h>
-#define HEIGHT rand()%50 ///любое кол-во строк
+#define HEIGHT rand()%40 ///любое кол-во строк
 #define WIDTH HEIGHT*2 ///любое кол-во длины строки
 using namespace std;
 bool deadend(int, int, int**, int, int); // Вспомогательная функция, определяет тупики
@@ -46,6 +47,7 @@ tcsetattr( STDIN_FILENO, TCSANOW, &oldt );
 return ch;}
 
 int main(){
+cout<<"\E[8;80;80t";
 int c=rand()%4;
 Iam.start();
 srand((unsigned)time(NULL));
@@ -73,8 +75,7 @@ while(1){
  }
  visual(maze,height,width,c);
  if(Iam.getx()==height-2&&Iam.gety()==width-2){
- cout<<"\nYOU WON!!!\nPRESS ANY KEY TO RESTART...";
- getch();
+ cout<<"\nYOU WON!!!\n";
  main();
  }
 }
