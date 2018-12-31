@@ -5,12 +5,13 @@
 #include<stdlib.h>
 #include<termios.h>
 #include<unistd.h>
-#define HEIGHT 30 ///любое кол-во строк
-#define WIDTH 60 ///любое кол-во длины строки
+#define HEIGHT rand()%30///любое кол-во строк      |any count of strings(vertical)
+#define WIDTH HEIGHT*2 ///любое кол-во длины строки|any count of column(horisontal)
 using namespace std;
 bool deadend(int, int, int**, int, int); // Вспомогательная функция, определяет тупики
 void visual(int**, int, int, int); // Изображение результата с помощью консольной графики
 void mazemake(int**, int, int); // Собственно алгоритм
+void win(int**,int,int,int);
 
 
 class person{
@@ -64,8 +65,16 @@ int** maze = new int*[height];
 for(int i = 0; i < height; i++) maze[i] = new int[width];
 mazemake(maze, height, width);
 visual(maze,height,width,c);
-cout<<"\n press F5 to new labyrinth. WASD to move.";
-if(getch()=='\E'&&getch()=='['&&getch()=='1'&&getch()=='5'&&getch()=='~')main();
+cout<<"\n press F5 to new maze.Press F1 to see the help menu.\n";
+if(getch()=='\E')switch(getch()){
+ case '[':
+  if(getch()=='1'&&getch()=='5'&&getch()=='~')main();
+ case 'O':
+  if(getch()=='P'){
+   system("clear");
+   cout<<"This game is a maze game.\nAll you need is come to the exit(it's red).Press WASD to move your person.\nESC-quit.Different colour-0.\nIf you want to change size of maze, you need to find this in the code of programm:\n'#define HEIGHT\n#define WIDTH'\nWhat is what you'll read.\nThen rebuild the programm.\n";
+  }
+}
 while(1){
  switch(getch()){
   case 'w':
@@ -84,11 +93,17 @@ while(1){
   case 'в':
  Iam.right(maze);
  break;
+  case '0':
+ c=rand()%5;
+ break;
+  case '\E':
+ main();
+ break;
  }
  visual(maze,height,width,c);
  if(Iam.getx()==height-2&&Iam.gety()==width-2){
- cout<<"\nYOU WON!!!\n";
- main();
+  win(maze,height,width,c);
+  main();
  }
 }
 }
@@ -123,6 +138,19 @@ bool deadend(int x, int y, int** maze, int height, int width){
 	if(a == 4)
 		return 1;
 	return 0;
+}
+
+void win(int** maze, int height,int width,int c){
+ for(int x=0;x<height;x++){
+   for(int y=0;y<width;y++){
+    if(maze[x][y]==1){
+     maze[x][y]=0;
+     visual(maze,height,width,c);
+     usleep(100);
+    }
+   }
+  }
+  cout<<"\nYOU WON!!!\n";
 }
 
 void visual(int** maze, int height, int width,int c){
