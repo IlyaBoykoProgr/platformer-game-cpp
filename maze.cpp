@@ -1,10 +1,29 @@
 #include<iostream>
 #include<cstdlib>
-#include<ctime>
 #include<stdio.h>
 #include<stdlib.h>
-#include<termios.h>
-#include<unistd.h>
+#ifdef WINDOWS
+ #include<windows.h>
+ #include<conio.h>
+ #define WAIT(h); Sleep(h);
+ #define CLEAR for(int i;i<100;i++)cout<<'\n'
+#else
+ #include<ctime>
+ #include<termios.h>
+ #include<unistd.h>
+ #define WAIT(h); usleep(h);
+ #define CLEAR system("clear");
+ char getch(){
+ struct termios oldt,newt;
+ int ch;
+ tcgetattr( STDIN_FILENO, &oldt );
+ newt = oldt;
+ newt.c_lflag &= ~( ICANON | ECHO );
+ tcsetattr( STDIN_FILENO, TCSANOW, &newt );
+ ch = getchar();
+ tcsetattr( STDIN_FILENO, TCSANOW, &oldt );
+ return ch;}
+#endif
 #define HEIGHT rand()%30///любое кол-во строк      |any count of strings(vertical)
 #define WIDTH HEIGHT*2 ///любое кол-во длины строки|any count of column(horisontal)
 using namespace std;
@@ -17,39 +36,23 @@ void win(int**,int,int,int);
 class person{
  int x,y;
  public:
-  person(){start();}
   void start(){y=3;x=3;}
   int getx(){return x;}
   int gety(){return y;}
   void up(int** maze){
-  if(maze[x-1][y]==0)return;
-  x-=2;
-  }
+  if(maze[x-1][y]==0)return;//if wall
+  x-=2;}
   void down(int** maze){
-  if(maze[x+1][y]==0)return;
-  x+=2;
-  }
+  if(maze[x+1][y]==0)return;//if wall
+  x+=2;}
   void left(int** maze){
-  if(maze[x][y-1]==0)return;
-  y-=2;
-  }
+  if(maze[x][y-1]==0)return;//if wall
+  y-=2;}
   void right(int** maze){
-  if(maze[x][y+1]==0)return;
-  y+=2;
-  }
+  if(maze[x][y+1]==0)return;//if wall
+  y+=2;}
 };
 person Iam;
-
-char getch(){
-struct termios oldt,newt;
-int ch;
-tcgetattr( STDIN_FILENO, &oldt );
-newt = oldt;
-newt.c_lflag &= ~( ICANON | ECHO );
-tcsetattr( STDIN_FILENO, TCSANOW, &newt );
-ch = getchar();
-tcsetattr( STDIN_FILENO, TCSANOW, &oldt );
-return ch;}
 
 int main(){
 Iam.start();
@@ -71,7 +74,7 @@ if(getch()=='\E')switch(getch()){
   if(getch()=='1'&&getch()=='5'&&getch()=='~')main();
  case 'O':
   if(getch()=='P'){
-   system("clear");
+   CLEAR;
    cout<<"This game is a maze game.\nAll you need is come to the exit(it's red).Press WASD to move your person.\nESC-quit.Different colour-0.\nIf you want to change size of maze, you need to find this in the code of programm:\n'#define HEIGHT\n#define WIDTH'\nWhat is what you'll read.\nThen rebuild the programm.\n";
   }
 }
@@ -143,18 +146,17 @@ bool deadend(int x, int y, int** maze, int height, int width){
 void win(int** maze, int height,int width,int c){
  for(int x=0;x<height;x++){
    for(int y=0;y<width;y++){
-    if(maze[x][y]==1){
-     maze[x][y]=0;
-     visual(maze,height,width,c);
-     usleep(100);
-    }
+    if(maze[x][y]==0)continue;
+    maze[x][y]=0;
+    visual(maze,height,width,c);
+    WAIT(110);
    }
   }
   cout<<"\nYOU WON!!!\n";
 }
 
 void visual(int** maze, int height, int width,int c){
- system("clear");
+ CLEAR;
 	for(int i = 0; i < height; i++){
 		for(int j = 0; j < width; j++){
 		    if(i==height-2&&j==width-2){cout<<"\E[41m \E[0m";continue;}
@@ -162,6 +164,9 @@ void visual(int** maze, int height, int width,int c){
 		    cout<<"\E[42m \E[0m";continue;}
 			switch(maze[i][j]){
 				case 0:
+				#ifdef WINDOWS
+				cout<<"%";break;
+				#else
 				switch(c){
 				 case 0:
 				 cout<<"\E[47m";break;
@@ -175,6 +180,7 @@ void visual(int** maze, int height, int width,int c){
 				 cout<<"\E[46;36m";break;
 				}
 				cout<<"0\E[0m"; break;
+				 #endif
 				case 1: cout<<" "; break;
 			}
         }
