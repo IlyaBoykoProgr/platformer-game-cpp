@@ -28,7 +28,7 @@
  tcsetattr( STDIN_FILENO, TCSANOW, &oldt );
  return ch;}
 #endif
-#define HEIGHT 13///любое кол-во строк      |any count of strings(vertical)
+#define HEIGHT 15///любое кол-во строк      |any count of strings(vertical)
 #define WIDTH HEIGHT*2 ///любое кол-во длины строки|any count of column(horisontal)
 using namespace std;
 bool deadend(int, int, int**, int, int); // Вспомогательная функция, определяет тупики
@@ -36,6 +36,7 @@ void visual(int**, int, int, int); // Изображение результат�
 void mazemake(int**, int, int); // Собственно алгоритм
 void win(int**,int,int,int);
 void help();
+int c=rand()%4;
 
 class person{
  int x,y;
@@ -45,26 +46,25 @@ class person{
   int gety(){return y;}
   void up(int** maze,bool cheats){
   if(maze[x-1][y]==0&&!cheats)return;//if wall
-  x-=2;}
+  x--;}
   void down(int** maze,bool cheats){
   if(maze[x+1][y]==0&&!cheats)return;//if wall
-  x+=2;}
+  x++;}
   void left(int** maze,bool cheats){
   if(maze[x][y-1]==0&&!cheats)return;//if wall
-  y-=2;}
+  y--;}
   void right(int** maze,bool cheats){
   if(maze[x][y+1]==0&&!cheats)return;//if wall
-  y+=2;}
+  y++;}
 };
 person Iam;
 
 int main(int argc, char *argv[]){
 bool walkthroughwalls=0;
-int c=rand()%5;
 if(argc>1)switch(*argv[1]){
  case 'h':
   help();
-  cout<<"maze v- version\nmaze p- play\nmaze c- cheats(walk through walls)\n\nThanks for using terminal!\n";
+  cout<<"maze v- version\nmaze p- play\nmaze c- cheats(walk through walls)\nmaze i- invisible walls\n\nThanks for using terminal!\n";
   return 0;
  case 'v':
   cout<<"Version: 2.3\nWin animation and hid cheats\n";
@@ -73,6 +73,10 @@ if(argc>1)switch(*argv[1]){
  walkthroughwalls=1;
  cout<<"you can walk through walls\n";
  case 'p':
+ break;
+ case 'i':
+ c=4;
+ cout<<"walls are invisible\n";
  break;
  case '\0':
  default:
@@ -109,21 +113,29 @@ while(1){
   case 'w':
   case 'ц':
  Iam.up(maze,walkthroughwalls);
+ maze[Iam.getx()][Iam.gety()]=2;
+ Iam.up(maze,walkthroughwalls);
  break;
   case 'a':
   case 'ф':
+ Iam.left(maze,walkthroughwalls);
+ maze[Iam.getx()][Iam.gety()]=2;
  Iam.left(maze,walkthroughwalls);
  break;
   case 's':
   case 'ы':
  Iam.down(maze,walkthroughwalls);
+ maze[Iam.getx()][Iam.gety()]=2;
+ Iam.down(maze,walkthroughwalls);
  break;
   case 'd':
   case 'в':
  Iam.right(maze,walkthroughwalls);
+ maze[Iam.getx()][Iam.gety()]=2;
+ Iam.right(maze,walkthroughwalls);
  break;
   case '0':
- c=rand()%5;
+ c=rand()%4;
  break;
   case '\E':
  main(argc,argv);
@@ -135,6 +147,7 @@ while(1){
  break;
  }
  visual(maze,height,width,c);
+ maze[Iam.getx()][Iam.gety()]=2;
  if(Iam.getx()==height-2&&Iam.gety()==width-2){
   win(maze,height,width,c);
   main(argc,argv);
@@ -223,19 +236,20 @@ void visual(int** maze, int height, int width,int c){
 				#else
 				switch(c){
 				 case 0:
-				 cout<<"\E[47m";break;
-				 case 1:
 				 cout<<"\E[43;33m";break;
-				 case 2:
+				 case 1:
 				 cout<<"\E[44;34m";break;
-				 case 3:
+				 case 2:
 				 cout<<"\E[45;35m";break;
-				 case 4:
+				 case 3:
 				 cout<<"\E[46;36m";break;
+				 case 4:
+				 cout<<"\E[40;30m";break;//invisible
 				}
 				cout<<"0\E[0m"; break;
 				 #endif
 				case 1: cout<<" "; break;
+				case 2: cout<<"\E[47m*\E[0m";break;
 			}
         }
 		cout<<endl;
