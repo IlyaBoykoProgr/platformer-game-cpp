@@ -38,7 +38,7 @@ void mazemake(int**, int, int); // Собственно алгоритм
 void win(int**,int,int);
 void help(int,int);
 int c=rand()%4;
-unsigned int mazescomplete;
+unsigned int mazescomplete,steps,bug;
 
 class person{
  int x,y;
@@ -48,27 +48,31 @@ class person{
   int gety(){return y;}
   void up(int** maze,bool cheats){
   if(maze[x-1][y]==0&&!cheats)return;//if wall
-  x--;}
+  x--;
+  steps++;}
   void down(int** maze,bool cheats){
   if(maze[x+1][y]==0&&!cheats)return;//if wall
-  x++;}
+  x++;
+  steps++;}
   void left(int** maze,bool cheats){
   if(maze[x][y-1]==0&&!cheats)return;//if wall
-  y--;}
+  y--;
+  steps++;}
   void right(int** maze,bool cheats){
   if(maze[x][y+1]==0&&!cheats)return;//if wall
-  y++;}
+  y++;
+  steps++;}
 };
 person Iam;
 
 int main(int argc, char *argv[]){
-ifstream temp1("data");
+ifstream temp1("data",ios::binary);
 if(temp1.is_open()==0){
- ofstream temp0("data");
- temp0<<'0';
+ ofstream temp0("data",ios::binary);
+ temp0<<sizeof('0')<<sizeof('0');
  temp0.close();
 }
-temp1>>mazescomplete;
+temp1>>bug>>mazescomplete>>steps;
 temp1.close();
 bool walkthroughwalls=0;
 int height = HEIGHT, width = WIDTH;
@@ -82,7 +86,7 @@ if(argc>1)switch(*argv[1]){
   cout<<"maze version- version\nmaze play- play\nmaze cheat- cheats(walk through walls)\nmaze invisible- invisible walls\n\nThanks for using terminal!\n";
   return 0;
  case 'v':
-  cout<<"Version: 2.5\nBugs and bugs kill...\n";
+  cout<<"Version: 2.6\nBugs kill...\n";
   return 0;
  case 'c':
  walkthroughwalls=1;
@@ -122,25 +126,21 @@ switch(getch()){
 while(1){
  switch(getch()){
   case 'w':
-  case 'ц':
  Iam.up(maze,walkthroughwalls);
  maze[Iam.getx()][Iam.gety()]=2;
  Iam.up(maze,walkthroughwalls);
  break;
   case 'a':
-  case 'ф':
  Iam.left(maze,walkthroughwalls);
  maze[Iam.getx()][Iam.gety()]=2;
  Iam.left(maze,walkthroughwalls);
  break;
   case 's':
-  case 'ы':
  Iam.down(maze,walkthroughwalls);
  maze[Iam.getx()][Iam.gety()]=2;
  Iam.down(maze,walkthroughwalls);
  break;
   case 'd':
-  case 'в':
  Iam.right(maze,walkthroughwalls);
  maze[Iam.getx()][Iam.gety()]=2;
  Iam.right(maze,walkthroughwalls);
@@ -165,8 +165,8 @@ while(1){
   win(maze,height,width);
   mazescomplete++;
   remove("data");
-  ofstream temp2("data");
-  temp2<<mazescomplete;
+  ofstream temp2("data",ios::binary);
+  temp2<<sizeof(mazescomplete)<<sizeof(steps);
   temp2.close();
   main(argc,argv);
   return 0;
@@ -183,10 +183,10 @@ void help(int height, int width){
    "'#define HEIGHT\n#define WIDTH'\n"<<
    "What is what you'll read.\nThen rebuild the programm.\n"<<
    "Completed mazes now: ";
-   ifstream temp4("data");
-   char read[20];
-   temp4>>read;
-   cout<<read<<"\nSize of maze: "<<width<<"x"<<height<<'\n'<<'\a';
+   ifstream temp4("data",ios::binary);
+   temp4>>bug>>mazescomplete>>steps;
+   cout<<mazescomplete<<"\nHow many steps you did: "<<steps<<'\n'
+   <<"Size of current maze: "<<width<<"x"<<height<<'\n'<<'\a';
 }
 
 bool deadend(int x, int y, int** maze, int height, int width){
@@ -255,7 +255,9 @@ void visual(int** maze, int height, int width,int c){
 			switch(maze[i][j]){
 				case 0:
 				#ifdef WINDOWS
-				cout<<"%";break;
+				if(c<4)cout<<"%";
+				else cout<<" ";
+				break;
 				#else
 				switch(c){
 				 case 0:
@@ -275,7 +277,7 @@ void visual(int** maze, int height, int width,int c){
 				case 2: cout<<"\E[47m*\E[0m";break;
 			}
         }
-		cout<<'\a'<<endl;
+		cout<<endl;
     }
    // cout<<"x:"<<Iam.getx()<<" y:"<<Iam.gety()<<'\n';
 }
