@@ -11,7 +11,7 @@
  #include<windows.h>
  #include<conio.h>
  #define WAIT(h) Sleep(h)
- #define CLEAR for(int i;i<100;i++)cout<<'\n'
+ #define CLEAR for(int i;i<100;i++)cout<<endl
 #else
  #include<ctime>
  #include<termios.h>
@@ -29,8 +29,8 @@
  tcsetattr( STDIN_FILENO, TCSANOW, &oldt );
  return ch;}
 #endif
-#define HEIGHT rand()%25//любое кол-во строк      |any count of strings(vertical)
-#define WIDTH rand()%81 //любое кол-во длины строки|any count of column(horisontal)
+#define HEIGHT 23//любое кол-во строк      |any count of strings(vertical)
+#define WIDTH 79 //любое кол-во длины строки|any count of column(horisontal)
 using namespace std;
 bool deadend(int, int, int**, int, int); // Вспомогательная функция, определяет тупики
 void visual(int**, int, int, int); // Изображение результата с помощью консольной графики
@@ -39,6 +39,7 @@ void win(int**,int,int);
 void help(int,int);
 int c=rand()%4;
 unsigned int mazescomplete,steps,bug;
+bool twoplayers;
 
 class person{
  int x,y;
@@ -63,7 +64,7 @@ class person{
   y++;
   steps++;}
 };
-person Iam;
+person Iam,second;
 
 int main(int argc, char *argv[]){
 ifstream temp1("data",ios::binary);
@@ -75,6 +76,7 @@ if(temp1.is_open()==0){
 temp1>>bug>>mazescomplete>>steps;
 temp1.close();
 bool walkthroughwalls=0;
+twoplayers=0;
 int height = HEIGHT, width = WIDTH;
 if(height%2==0)height++;
 if(width%2==0)width++;
@@ -83,34 +85,38 @@ if(width<13)width=13;
 if(argc>1)switch(*argv[1]){
  case 'h':
   help(height,width);
-  cout<<"maze version- version\nmaze play- play\nmaze cheat- cheats(walk through walls)\nmaze invisible- invisible walls\n\nThanks for using terminal!\n";
+  cout<<"maze version- version\nmaze play- play\nmaze cheat- cheats(walk through walls)\nmaze invisible- invisible walls\nmaze two- two players\n\nThanks for using terminal!\n";
   return 0;
  case 'v':
   cout<<"Version: 2.6\nBugs kill...\n";
   return 0;
  case 'c':
- walkthroughwalls=1;
- cout<<"You can walk through walls\n";
+  walkthroughwalls=1;
+  cout<<"You can walk through walls\n";
  case 'p':
  break;
  case 'i':
- c=4;
- cout<<"Walls are invisible\n";
+  c=4;
+  cout<<"Walls are invisible\n";
  break;
- case '\0':
+ case 't':
+  twoplayers=1;
+  cout<<"2 players mode\n";
+  break;
  default:
   cout<<"start programm using terminal!'./maze help' to help menu\n";
-  return 0;
+ return 0;
 }
-Iam.start();
-setlocale(LC_ALL,"Russian");
-srand((unsigned)time(NULL));
-int** maze = new int*[height];
-for(int i = 0; i < height; i++) maze[i] = new int[width];
+Iam.start(); second.start();
+int** maze=new int*[height];
+for(int i=0; i<height; i++) maze[i]=new int[width];
 mazemake(maze, height, width);
 visual(maze,height,width,c);
-cout<<"\n press N to new maze.Press ? to see the help menu.Press Esc to quit\n";
+cout<<"\n press N to new maze.Press ? to see the help menu.Press Esc to quit\nTwo players mode- 2\n";
 switch(getch()){
+ case '2':
+  twoplayers=1;
+  break;
  case 'n':
  case 'N':
   main(argc,argv);
@@ -157,27 +163,49 @@ while(1){
  help(height,width);
  getch();
  break;
+ case 'i':
+ second.up(maze,walkthroughwalls);
+ maze[second.getx()][second.gety()]=2;
+ second.up(maze,walkthroughwalls);
+ break;
+  case 'j':
+ second.left(maze,walkthroughwalls);
+ maze[second.getx()][second.gety()]=2;
+ second.left(maze,walkthroughwalls);
+ break;
+  case 'k':
+ second.down(maze,walkthroughwalls);
+ maze[second.getx()][second.gety()]=2;
+ second.down(maze,walkthroughwalls);
+ break;
+  case 'l':
+ second.right(maze,walkthroughwalls);
+ maze[second.getx()][second.gety()]=2;
+ second.right(maze,walkthroughwalls);
+ break;
  }
  visual(maze,height,width,c);
  maze[Iam.getx()][Iam.gety()]=2;
- cout<<'\a';
  if(Iam.getx()==height-2&&Iam.gety()==width-2){
   win(maze,height,width);
+  cout<<"\nFIRST WON!!!\n\a";}
+  if(second.getx()==height-2&&second.gety()==width-2){
+  win(maze,height,width);
+  cout<<"\nSECOND WON!!!\n\a";}
+  if(Iam.getx()==height-2&&Iam.gety()==width-2 || second.getx()==height-2&&second.gety()==width-2){remove("data");
   mazescomplete++;
-  remove("data");
   ofstream temp2("data",ios::binary);
   temp2<<sizeof(mazescomplete)<<sizeof(steps);
   temp2.close();
   main(argc,argv);
-  return 0;
+  return 0;}
  }
-}
 }
 
 void help(int height, int width){
  CLEAR;
    cout<<"\aThis game is a maze game.\n"<<
-   "All you need is come to the exit(it's red).Press WASD to move your person.\n"<<
+   "All you need is come to the exit(it's red).Press WASD(IJKL for 2nd player) to move a person.\n"<<
    "ESC-quit.Different colour-0.\n"<<
    "If you want to change size of maze, you need to find this in the code of programm:\n"<<
    "'#define HEIGHT\n#define WIDTH'\n"<<
@@ -229,9 +257,8 @@ void win(int** maze, int height,int width){
   if(maze[x][y]==0){i--;continue;}
   maze[x][y]=0;
   visual(maze,height,width,rand()%4);
-  WAIT(110);
+  WAIT(100);
  }
- cout<<"\nYOU WON!!!\n\a";
 }
 
 void visual(int** maze, int height, int width,int c){
@@ -247,7 +274,14 @@ void visual(int** maze, int height, int width,int c){
 		    continue;}
 		    if(Iam.getx()==i && Iam.gety()==j){
 		    #ifdef WINDOWS
-		    cout<<"Я";
+		    cout<<"1";
+		    #else
+		    cout<<"\E[42m \E[0m";
+		    #endif
+		    continue;}
+		    if(twoplayers && second.getx()==i && second.gety()==j){
+		    #ifdef WINDOWS
+		    cout<<"2";
 		    #else
 		    cout<<"\E[42m \E[0m";
 		    #endif
