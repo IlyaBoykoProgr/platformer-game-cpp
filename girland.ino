@@ -13,19 +13,10 @@ void setup(){
 }
 
 void loop(){
-   uint32_t color = pix.Color(random(100,255),random(100,255),random(100,255));
+   uint32_t color = pix.Color(random(0,255),random(0,255),random(0,255));
    switch (MODE){
      case 0:
-       for(byte i=PIXELS-1; i>=0; i--){
-         for(byte j=0; j<=i; j++){
-           pix.setPixelColor(j, color);
-           delay(100);
-           pix.setPixelColor(j,0,0,0);
-         }
-         pix.setPixelColor(i,color);
-         uint32_t color = pix.Color(random(100,255),random(100,255),random(100,255));
-       }
+       
      break;
    }
-   
 }
