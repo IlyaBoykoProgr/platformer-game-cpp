@@ -2,7 +2,7 @@
 #define PIXELS 60
 #define PIN 8
 #define BRIGHTNESS 100
-#define MODE 1
+#define MODE 2
 
 Adafruit_NeoPixel pix(PIXELS,PIN);
 
@@ -30,9 +30,6 @@ void loop(){
        pix.show();
        delay(600);
      }
-     break;
-     case 2:
-       
      break;
    }
 }
