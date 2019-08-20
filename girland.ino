@@ -2,7 +2,7 @@
 #define PIXELS 60
 #define PIN 8
 #define BRIGHTNESS 100
-#define MODE 0
+#define MODE 1
 
 Adafruit_NeoPixel pix(PIXELS,PIN);
 
@@ -23,6 +23,14 @@ void loop(){
        }
      break;
      case 1:
+       int i=random(0,2);
+       for(i; i<PIXELS; i+=2){
+         pix.setPixelColor(i,color);
+         pix.show();
+         delay(10);
+       }
+     break;
+     case 2:
        
      break;
    }
