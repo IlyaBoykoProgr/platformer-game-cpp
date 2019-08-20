@@ -22,13 +22,14 @@ void loop(){
          delay(10);
        }
      break;
-     case 1:
-       int i=random(0,2);
+     case 1:{
+       byte i=random(0,2);
        for(i; i<PIXELS; i+=2){
          pix.setPixelColor(i,color);
-         pix.show();
-         delay(10);
        }
+       pix.show();
+       delay(600);
+     }
      break;
      case 2:
        
