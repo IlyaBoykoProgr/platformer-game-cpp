@@ -16,6 +16,13 @@ void loop(){
    uint32_t color = pix.Color(random(0,255),random(0,255),random(0,255));
    switch (MODE){
      case 0:
+       for(byte i=0; i<PIXELS; i++){
+         pix.setPixelColor(i,color);
+         pix.show();
+         delay(10);
+       }
+     break;
+     case 1:
        
      break;
    }
