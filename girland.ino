@@ -6,6 +6,13 @@
 
 Adafruit_NeoPixel pix(PIXELS,PIN);
 
+void fillRange(byte from, byte to, uint32_t color=pix.Color(0,0,0)){
+  for(byte i=from; i<to; i++){
+    pix.setPixelColor(i,color);
+    pix.show();
+  }
+}
+
 void setup(){
   pix.begin();
   pix.setBrightness(BRIGHTNESS);
@@ -30,6 +37,20 @@ void loop(){
        pix.show();
        delay(600);
      }
+     break;
+     case 2:
+       for(byte j=0; j<PIXELS-4; j++){
+         fillRange(j,j+5,color);
+         delay(3);
+         fillRange(j,j+5);
+         delay(3);
+       }
+       for(byte j=PIXELS-5; j>0; j--){
+         fillRange(j,j+5,color);
+         delay(3);
+         fillRange(j,j+5);
+         delay(3);
+       }
      break;
    }
 }
