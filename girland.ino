@@ -1,8 +1,8 @@
 #include "Adafruit_NeoPixel.h"
 #define PIXELS 60 // count of pixels in the lent | кол-во пикселей в ленте
 #define PIN 8 //pin with the adress lent | пин с адресной лентой
-#define BRIGHTNESS 100 // you understood | яркость
-#define MODE 5 // the mode | режим
+#define BRIGHTNESS 200 //<256!!!!
+#define MODE random(0,6) // the mode | режим
 /*  The random mode is | случайный режим задается 
     random(0,6)
 */
@@ -52,6 +52,7 @@ void loop(){
          delay(5);
          fillRange(j,j+5);
        }
+       pix.clear();
      break;
      case 3://pushers) | пихалки
        for(byte i=0; i<PIXELS; i++){
@@ -78,22 +79,23 @@ void loop(){
          pix.setPixelColor(i,color);
          color = pix.Color(random(0,255),random(0,255),random(0,255));
        }
+       pix.clear();
      break;
      case 5:
        pix.setBrightness(5);
        pix.fill(color);
-       for(byte i=5; i<=BRIGHTNESS; i++){
+       for(byte i=10; i<=BRIGHTNESS; i++){
          pix.setBrightness(i);
          pix.show();
          delay(3);
        }
-       for(byte i=BRIGHTNESS; i>4; i--){
+       for(byte i=BRIGHTNESS; i>11; i--){
          pix.setBrightness(i);
          pix.show();
          delay(3);
        }
+       pix.clear();
        pix.setBrightness(BRIGHTNESS);
      break;
    }
-   pix.clear();pix.show();
 }
