@@ -1,10 +1,10 @@
 #include "Adafruit_NeoPixel.h"
 #define PIXELS 60 // count of pixels in the lent | кол-во пикселей в ленте
 #define PIN 8 //pin with the adress lent | пин с адресной лентой
-#define BRIGHTNESS 200 //<255!!!!
-#define MODE random(0,6) // the mode | режим
+#define BRIGHTNESS 150 //<255!!!!
+#define MODE 6 // the mode | режим
 /*  The random mode is | случайный режим задается 
-    random(0,6)
+    random(0,7)
 */
 Adafruit_NeoPixel pix(PIXELS,PIN);
 
@@ -104,6 +104,16 @@ void loop(){
        }
        pix.clear();
        pix.setBrightness(BRIGHTNESS);
+     break;
+     case 6://rainbow | радуга
+       for(long firstPixelHue = 0; firstPixelHue < 5*65536; firstPixelHue += 256) {
+         for(int i=0; i<PIXELS; i++) {
+           int pixelHue = firstPixelHue + (i * 65536L / PIXELS);
+           pix.setPixelColor(i, pix.gamma32(pix.ColorHSV(pixelHue)));
+         }
+         pix.show();
+         delay(5);
+       }
      break;
      default:
        Serial.println("No such mode(");
