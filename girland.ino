@@ -105,5 +105,8 @@ void loop(){
        pix.clear();
        pix.setBrightness(BRIGHTNESS);
      break;
+     default:
+       Serial.print("No such mode(");
+     break;
    }
 }
