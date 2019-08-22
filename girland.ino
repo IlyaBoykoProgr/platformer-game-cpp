@@ -15,6 +15,7 @@ void fillRange(byte from, byte to, uint32_t color=pix.Color(0,0,0)){
 }
 
 void setup(){
+  Serial.begin(9600);
   pix.begin();
   pix.setBrightness(BRIGHTNESS);
   pix.show();
@@ -22,7 +23,14 @@ void setup(){
 
 void loop(){
    uint32_t color = pix.Color(random(0,255),random(0,255),random(0,255));
-   switch (MODE){
+   int a=MODE;
+   if(Serial.available()){
+     a=Serial.read()-'0';
+     Serial.print("The mode number ");
+     Serial.print(a);
+     Serial.println(" accepted!");
+   }
+   switch (a){
      case 0://snake | змейка
        for(byte i=0; i<PIXELS; i++){
          pix.setPixelColor(i,color);
