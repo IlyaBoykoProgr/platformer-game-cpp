@@ -1,7 +1,7 @@
 #include "Adafruit_NeoPixel.h"
 #define PIXELS 60 // count of pixels in the lent | кол-во пикселей в ленте
 #define PIN 8 //pin with the adress lent | пин с адресной лентой
-#define BRIGHTNESS 200 //<256!!!!
+#define BRIGHTNESS 200 //<255!!!!
 #define MODE random(0,6) // the mode | режим
 /*  The random mode is | случайный режим задается 
     random(0,6)
@@ -11,7 +11,6 @@ Adafruit_NeoPixel pix(PIXELS,PIN);
 void fillRange(byte from, byte to, uint32_t color=pix.Color(0,0,0)){
   for(byte i=from; i<to; i++){
     pix.setPixelColor(i,color);
-    pix.show();
   }
 }
 
@@ -43,13 +42,14 @@ void loop(){
      case 2://moving line | бегающая линия
        for(byte j=0; j<PIXELS-4; j++){
          fillRange(j,j+5,color);
-         delay(3);
+         pix.show();
+         delay(10);
          fillRange(j,j+5);
-         delay(3);
        }
        for(byte j=PIXELS-5; j>0; j--){
          fillRange(j,j+5,color);
-         delay(5);
+         pix.show();
+         delay(10);
          fillRange(j,j+5);
        }
        pix.clear();
