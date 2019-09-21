@@ -5,7 +5,7 @@ LiquidCrystal lcd(8, 9, 4, 5, 6, 7 );
 // Количество позиций в ширину дисплея
 const int FIELD_WIDTH = 16;
 // Вероятность возникновения препятствия (5 из 10) 50%
-const float BAR_PROBABILITY = 5; 
+const float BAR_PROBABILITY = 4; 
 
 // Нажатая клавиша
 int button;
@@ -18,22 +18,22 @@ int button;
 
 // Состояния игры
 int gameStatus;
-const int MAIN_MENU = 0; // Главное меню
-const int IN_GAME   = 1; // Игра
-const int PAUSE     = 2; // Пауза
-const int ENDING    = 3; // Конец
+#define MAIN_MENU 0 // Главное меню
+#define IN_GAME 1 // Игра
+#define PAUSE 2 // Пауза
+#define ENDING 3 // Конец
 
 // Отображаемые символы
 char gameFields[32];     // Игровое поле
 #define SPACE ' '  // Пустая клетка
-#define BAR '['    // Препятствие
+#define BAR '\\'    // Препятствие
 #define PLAYER '>' // Игрок
 
 // Игровая скорость, чем меньше параметры тем выше скорость
 int gameSpeed;
-int SPEED_HIGH = 70;     // Скорость ускорения
-int SPEED_NORMAL = 200;  // Изначальная скорость
-int changeSpeed = 7000;  // Интервал изменения скорость (5 сек.)
+int SPEED_HIGH = 100;     // Скорость ускорения
+int SPEED_NORMAL = 300;  // Изначальная скорость
+int changeSpeed = 7000;  // Интервал изменения скорости
 
 long startGameTime;      // Время начала игры
 long lastMovementTime;   // Последнее время обновления дисплея
@@ -208,24 +208,11 @@ void gameOver()
     playerPos = FIELD_WIDTH;
   }  
   // Анимация проигрыша
+  for(byte i=3;i>0;i--){
   lcd.setCursor(playerPos%FIELD_WIDTH, playerPos/FIELD_WIDTH);
-  lcd.print('x');
-  delay(300); 
-  lcd.setCursor(playerPos%FIELD_WIDTH, playerPos/FIELD_WIDTH);
-  lcd.print('X');
-  delay(300); 
-  lcd.setCursor(playerPos%FIELD_WIDTH, playerPos/FIELD_WIDTH);
-  lcd.print('x');
-  delay(300); 
-  lcd.setCursor(playerPos%FIELD_WIDTH, playerPos/FIELD_WIDTH);
-  lcd.print('X');
-  delay(300);
-  lcd.setCursor(playerPos%FIELD_WIDTH, playerPos/FIELD_WIDTH);
-  lcd.print('x');
-  delay(300); 
-  lcd.setCursor(playerPos%FIELD_WIDTH, playerPos/FIELD_WIDTH);
-  lcd.print('X');
-  delay(300);
+  lcd.print(i);
+  delay(1000);  
+  }
   // Очищаем дисплей
   lcd.setCursor(0, 0);  
   lcd.print("                ");
@@ -245,9 +232,10 @@ void gameOver()
 // Функция печати игрового поля
 void printGameField()
 {
+  lcd.setCursor(0,0);
   for (int i = 0; i < FIELD_WIDTH*2; i++)
   {
-     lcd.setCursor(i%FIELD_WIDTH, i/FIELD_WIDTH);
+     if(i==16)lcd.setCursor(0,1);
      lcd.print(gameFields[i]);    
   }
 }
@@ -279,9 +267,12 @@ void setup()
   // Анимация первой загрузки
   lcd.begin(16, 2);
   lcd.setCursor(0, 0);              
-  lcd.print("press SELECT");     
-  lcd.setCursor(0, 1); 
-  lcd.print("to start game "); 
+  lcd.print("press SELECT");      
+  for(byte i=0;i<16;i++){
+    lcd.setCursor(i,1);
+    lcd.print(i%10);
+    delay(100);
+  }
 }
 
 void loop()
