@@ -294,7 +294,17 @@ void loop()
        if (button == BUTTON_SELECT)
        {
           startGame();
-       }
+       } 
+       if(button==BUTTON_LEFT){
+              lcd.setCursor(0,0);
+              lcd.print("Best time:");
+              lcd.print(bestGameTime);
+              lcd.print(" sec");
+              lcd.setCursor(0,1);
+              lcd.print("Best distance");
+              lcd.print(bestMetres);
+              lcd.print("m");
+        }
        break;
      case IN_GAME:
        // Устанавливаем стандартную скорость
@@ -307,16 +317,7 @@ void loop()
             break;
           // Пауза
           case BUTTON_LEFT:
-            if(gameStatus==MAIN_MENU){
-              lcd.setCursor(0,0);
-              lcd.print("Best time:");
-              lcd.print(bestGameTime);
-              lcd.print(" sec");
-              lcd.setCursor(0,1);
-              lcd.print("Best distance");
-              lcd.print(bestMetres);
-              lcd.print("m");
-            }else pause();
+            pause();
             break;
           // Перемещение в верхнюю строку
           case BUTTON_UP:
