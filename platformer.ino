@@ -303,7 +303,7 @@ void loop()
               lcd.setCursor(0,1);
               lcd.print("&distance:");
               lcd.print(bestMetres);
-              lcd.print("m");
+              lcd.print("m  ");
         }
        break;
      case IN_GAME:
