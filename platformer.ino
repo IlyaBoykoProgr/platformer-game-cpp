@@ -199,9 +199,8 @@ void gameOver()
   // Рассчитываем время игры
   endGameTime += (millis() - startGameTime);
   // Сравниваем с лучшим
-  if (endGameTime > bestGameTime)
-  {
-     bestGameTime = endGameTime; 
+  if (endGameTime > bestGameTime){
+    bestGameTime = endGameTime; 
   }
   if(metres>bestMetres){
     bestMetres=metres;
@@ -211,19 +210,14 @@ void gameOver()
   if (gameFields[FIELD_WIDTH] == PLAYER)
   {
     playerPos = FIELD_WIDTH;
-  }  
+  }
   // Анимация проигрыша
   for(byte i=3;i>0;i--){
   lcd.setCursor(playerPos%FIELD_WIDTH, playerPos/FIELD_WIDTH);
   lcd.print(i);
   delay(1000);  
   }
-  // Очищаем дисплей
-  lcd.setCursor(0, 0);  
-  lcd.print("                ");
-  lcd.setCursor(0, 1);   
-  lcd.print("                ");
-  lcd.setCursor(0, 0);        
+  lcd.clear();
   // Выводим статистику
   lcd.print("Time:");
   lcd.print(endGameTime/1000);   
@@ -248,13 +242,7 @@ void printGameField()
 
 // Функция паузы
 void pause()
-{
-  // Очищаем дисплей
-  lcd.setCursor(0, 0);  
-  lcd.print("                ");
-  lcd.setCursor(0, 1);   
-  lcd.print("                ");
-  lcd.setCursor(0, 0);        
+{ lcd.clear();
   // Выводим служебное сообщение 
   lcd.print("Paused");       
   lcd.setCursor(0, 1);              
@@ -273,10 +261,10 @@ void setup()
   // Анимация первой загрузки
   lcd.begin(16, 2);
   lcd.setCursor(0, 0);              
-  lcd.print("press SELECT");      
-  for(byte i=0;i<16;i++){
-    lcd.setCursor(i,1);
-    lcd.print(i%10);
+  char start[]="press SELECTto play!:)";
+  for(byte i=0;i<22;i++){
+    if(i==12)lcd.setCursor(0,1);
+    lcd.print(start[i]);
     delay(100);
   }
 }
@@ -296,6 +284,7 @@ void loop()
           startGame();
        } 
        if(button==BUTTON_LEFT){
+              lcd.clear();
               lcd.setCursor(0,0);
               lcd.print("Best time:");
               lcd.print(bestGameTime/1000);
@@ -303,7 +292,7 @@ void loop()
               lcd.setCursor(0,1);
               lcd.print("distance:");
               lcd.print(bestMetres);
-              lcd.print("m  ");
+              lcd.print("m");
         }
        break;
      case IN_GAME:
