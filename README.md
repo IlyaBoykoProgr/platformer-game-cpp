@@ -1,2 +1,2 @@
 # labirinth-game-cpp
-##it's my files
+it's my files
