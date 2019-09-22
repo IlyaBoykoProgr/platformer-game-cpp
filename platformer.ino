@@ -5,7 +5,7 @@ LiquidCrystal lcd(8, 9, 4, 5, 6, 7 );
 // Количество позиций в ширину дисплея
 const int FIELD_WIDTH = 16;
 // Вероятность возникновения препятствия (5 из 10) 50%
-const float BAR_PROBABILITY = 4; 
+const float BAR_PROBABILITY = 6; 
 
 // Нажатая клавиша
 int button;
@@ -26,8 +26,8 @@ int gameStatus;
 // Отображаемые символы
 char gameFields[32];     // Игровое поле
 #define SPACE ' '  // Пустая клетка
-#define BAR '\\'    // Препятствие
-#define PLAYER '>' // Игрок
+#define BAR char(1)    // Препятствие
+#define PLAYER char(2) // Игрок
 
 // Игровая скорость, чем меньше параметры тем выше скорость
 int gameSpeed;
@@ -42,7 +42,8 @@ long lastChangeSpeedTime;// Последнее время изменения с�
 long endGameTime;        // Время окончания игры
 long bestGameTime;       // Лучшее время
 int bestMetres = 0;      // наилучшее растояние
-int topQueue = true;     // Параметр для алгоритма расстановки препятствий
+bool topQueue = true;     // Параметр для алгоритма расстановки препятствий
+
 
 // Функция возвращает какая кнопка была нажата
 int getPressedButton()
@@ -199,18 +200,10 @@ void gameOver()
   // Рассчитываем время игры
   endGameTime += (millis() - startGameTime);
   // Сравниваем с лучшим
-  if (endGameTime > bestGameTime){
-    bestGameTime = endGameTime; 
-  }
-  if(metres>bestMetres){
-    bestMetres=metres;
-  }
+  bestGameTime =(endGameTime > bestGameTime)? endGameTime:bestGameTime; 
+  bestMetres= (metres>bestMetres)? metres:bestMetres;
   // Вычисляем позицию игрока
-  int playerPos = 0;
-  if (gameFields[FIELD_WIDTH] == PLAYER)
-  {
-    playerPos = FIELD_WIDTH;
-  }
+    int playerPos = (gameFields[FIELD_WIDTH] == PLAYER)? FIELD_WIDTH:0;
   // Анимация проигрыша
   for(byte i=3;i>0;i--){
   lcd.setCursor(playerPos%FIELD_WIDTH, playerPos/FIELD_WIDTH);
@@ -257,16 +250,41 @@ void setup()
   gameStatus = MAIN_MENU;
   button = BUTTON_NONE;
   bestGameTime = 0;
+  uint8_t simbol[8] =
+{
+0b11111,
+0b10000,
+0b10111,
+0b10101,
+0b10101,
+0b10101,
+0b10001,
+0b11111,
+};
+lcd.createChar(1,simbol);
+uint8_t person[8] =
+{
+  0b01110,
+  0b01110,
+  0b00101,
+  0b01110,
+  0b10100,
+  0b01010,
+  0b10001,
+  0b10001,
+};
+lcd.createChar(2,person);
   
   // Анимация первой загрузки
   lcd.begin(16, 2);
   lcd.setCursor(0, 0);              
-  char start[]="press SELECTto play!:)";
-  for(byte i=0;i<22;i++){
+  char start[]="press SELECT to play!:)";
+  for(byte i=0;i<23;i++){
     if(i==12)lcd.setCursor(0,1);
     lcd.print(start[i]);
     delay(100);
   }
+  lcd.print(char(2));
 }
 
 void loop()
@@ -371,11 +389,7 @@ void loop()
        // По любому нажатию переходим в главное меню
        if (button != BUTTON_NONE)
        {
-         lcd.setCursor(0, 0);  
-         lcd.print("                ");
-         lcd.setCursor(0, 1);   
-         lcd.print("                ");
-         lcd.setCursor(0, 0);         
+         lcd.clear();   
          lcd.print("Play - SELECT");       
          lcd.setCursor(0, 1);              
          lcd.print("Best scores-LEFT");  
