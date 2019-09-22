@@ -1,4 +1,4 @@
-#include <Wire.h> 
+#include <EEPROM.h>
 #include <LiquidCrystal.h>
 LiquidCrystal lcd(8, 9, 4, 5, 6, 7 );
 
@@ -301,7 +301,7 @@ void loop()
               lcd.print(bestGameTime/1000);
               lcd.print(" sec");
               lcd.setCursor(0,1);
-              lcd.print("&distance:");
+              lcd.print("distance:");
               lcd.print(bestMetres);
               lcd.print("m  ");
         }
