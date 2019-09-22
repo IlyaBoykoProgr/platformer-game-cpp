@@ -34,12 +34,14 @@ int gameSpeed;
 int SPEED_HIGH = 100;     // Скорость ускорения
 int SPEED_NORMAL = 300;  // Изначальная скорость
 int changeSpeed = 7000;  // Интервал изменения скорости
+int metres = 0; //пройденные метры
 
 long startGameTime;      // Время начала игры
 long lastMovementTime;   // Последнее время обновления дисплея
 long lastChangeSpeedTime;// Последнее время изменения скорости
 long endGameTime;        // Время окончания игры
 long bestGameTime;       // Лучшее время
+int bestMetres = 0;      // наилучшее растояние
 int topQueue = true;     // Параметр для алгоритма расстановки препятствий
 
 // Функция возвращает какая кнопка была нажата
@@ -187,7 +189,7 @@ void moveGameField()
     }
     topQueue = true; 
   }
-  
+  metres++;
 }
 
 // Функция завершения игры
@@ -200,6 +202,9 @@ void gameOver()
   if (endGameTime > bestGameTime)
   {
      bestGameTime = endGameTime; 
+  }
+  if(metres>bestMetres){
+    bestMetres=metres;
   }
   // Вычисляем позицию игрока
   int playerPos = 0;
@@ -220,13 +225,14 @@ void gameOver()
   lcd.print("                ");
   lcd.setCursor(0, 0);        
   // Выводим статистику
-  lcd.print("Last time:");
+  lcd.print("Time:");
   lcd.print(endGameTime/1000);   
   lcd.print(" sec");     
   lcd.setCursor(0, 1);              
-  lcd.print("Best time:");  
-  lcd.print(bestGameTime/1000);  
-  lcd.print(" sec"); 
+  lcd.print("Metres:");  
+  lcd.print(metres);  
+  lcd.print(" m"); 
+  metres=0;
 }
 
 // Функция печати игрового поля
@@ -301,7 +307,16 @@ void loop()
             break;
           // Пауза
           case BUTTON_LEFT:
-            pause();
+            if(gameStatus==MAIN_MENU){
+              lcd.setCursor(0,0);
+              lcd.print("Best time:");
+              lcd.print(bestGameTime);
+              lcd.print(" sec");
+              lcd.setCursor(0,1);
+              lcd.print("Best distance");
+              lcd.print(bestMetres);
+              lcd.print("m");
+            }else pause();
             break;
           // Перемещение в верхнюю строку
           case BUTTON_UP:
@@ -371,9 +386,9 @@ void loop()
          lcd.setCursor(0, 1);   
          lcd.print("                ");
          lcd.setCursor(0, 0);         
-         lcd.print("To start game");       
+         lcd.print("Play - SELECT");       
          lcd.setCursor(0, 1);              
-         lcd.print("press SELECT");  
+         lcd.print("Best scores-LEFT");  
          gameStatus = MAIN_MENU;
        }  
        break;
