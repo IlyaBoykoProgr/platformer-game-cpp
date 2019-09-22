@@ -298,7 +298,7 @@ void loop()
        if(button==BUTTON_LEFT){
               lcd.setCursor(0,0);
               lcd.print("Best time:");
-              lcd.print(bestGameTime);
+              lcd.print(bestGameTime/1000);
               lcd.print(" sec");
               lcd.setCursor(0,1);
               lcd.print("Best distance");
