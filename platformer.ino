@@ -301,7 +301,7 @@ void loop()
               lcd.print(bestGameTime/1000);
               lcd.print(" sec");
               lcd.setCursor(0,1);
-              lcd.print("Best distance");
+              lcd.print("&distance:");
               lcd.print(bestMetres);
               lcd.print("m");
         }
