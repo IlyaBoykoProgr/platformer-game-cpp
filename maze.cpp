@@ -29,8 +29,8 @@
  tcsetattr( STDIN_FILENO, TCSANOW, &oldt );
  return ch;}
 #endif
-#define HEIGHT 23//любое кол-во строк      |any count of strings(vertical)
-#define WIDTH 79 //любое кол-во длины строки|any count of column(horisontal)
+#define HEIGHT rand()%40//любое кол-во строк      |any count of strings(vertical)
+#define WIDTH rand()%40 //любое кол-во длины строки|any count of column(horisontal)
 using namespace std;
 bool deadend(int, int, int**, int, int); // Вспомогательная функция, определяет тупики
 void visual(int**, int, int, int); // Изображение результата с помощью консольной графики
@@ -38,7 +38,6 @@ void mazemake(int**, int, int); // Собственно алгоритм
 void win(int**,int,int);
 void help(int,int);
 int c=rand()%4;
-unsigned int mazescomplete,steps,bug;
 bool twoplayers;
 
 class person{
@@ -50,31 +49,23 @@ class person{
   void up(int** maze,bool cheats){
   if(maze[x-1][y]==0&&!cheats)return;//if wall
   x--;
-  steps++;}
+  }
   void down(int** maze,bool cheats){
   if(maze[x+1][y]==0&&!cheats)return;//if wall
   x++;
-  steps++;}
+  }
   void left(int** maze,bool cheats){
   if(maze[x][y-1]==0&&!cheats)return;//if wall
   y--;
-  steps++;}
+  }
   void right(int** maze,bool cheats){
   if(maze[x][y+1]==0&&!cheats)return;//if wall
   y++;
-  steps++;}
+  }
 };
 person Iam,second;
 
 int main(int argc, char *argv[]){
-ifstream temp1("data",ios::binary);
-if(temp1.is_open()==0){
- ofstream temp0("data",ios::binary);
- temp0<<sizeof('0')<<sizeof('0');
- temp0.close();
-}
-temp1>>bug>>mazescomplete>>steps;
-temp1.close();
 bool walkthroughwalls=0;
 twoplayers=0;
 int height = HEIGHT, width = WIDTH;
@@ -192,11 +183,7 @@ while(1){
   if(second.getx()==height-2&&second.gety()==width-2){
   win(maze,height,width);
   cout<<"\nSECOND WON!!!\n\a";}
-  if(Iam.getx()==height-2&&Iam.gety()==width-2 || second.getx()==height-2&&second.gety()==width-2){remove("data");
-  mazescomplete++;
-  ofstream temp2("data",ios::binary);
-  temp2<<sizeof(mazescomplete)<<sizeof(steps);
-  temp2.close();
+  if((Iam.getx()==height-2&&Iam.gety()==width-2)|| (second.getx()==height-2&&second.gety()==width-2)){
   main(argc,argv);
   return 0;}
  }
@@ -210,11 +197,7 @@ void help(int height, int width){
    "If you want to change size of maze, you need to find this in the code of programm:\n"<<
    "'#define HEIGHT\n#define WIDTH'\n"<<
    "What is what you'll read.\nThen rebuild the programm.\n"<<
-   "Completed mazes now: ";
-   ifstream temp4("data",ios::binary);
-   temp4>>bug>>mazescomplete>>steps;
-   cout<<mazescomplete<<"\nHow many steps you did: "<<steps<<'\n'
-   <<"Size of current maze: "<<width<<"x"<<height<<'\n'<<'\a';
+   "Size of current maze: "<<width<<"x"<<height<<'\n'<<'\a';
 }
 
 bool deadend(int x, int y, int** maze, int height, int width){
