@@ -1,27 +1,17 @@
-#include <EEPROM.h>
 #include <LiquidCrystal.h>
+#include "functions.h"
 LiquidCrystal lcd(8, 9, 4, 5, 6, 7 );
+// Вероятность возникновения препятствия (5 из 10 -- 50%)
+#define BAR_PROBABILITY 6
 
-// Количество позиций в ширину дисплея
-const int FIELD_WIDTH = 16;
-// Вероятность возникновения препятствия (5 из 10) 50%
-const float BAR_PROBABILITY = 6; 
-
-// Нажатая клавиша
-int button;
-#define BUTTON_NONE 0
-#define BUTTON_RIGHT 1
-#define BUTTON_UP 2
-#define BUTTON_DOWN 3
-#define BUTTON_LEFT 4
-#define BUTTON_SELECT 5
+#define FIELD_WIDTH 16
 
 // Состояния игры
-int gameStatus;
 #define MAIN_MENU 0 // Главное меню
 #define IN_GAME 1 // Игра
 #define PAUSE 2 // Пауза
 #define ENDING 3 // Конец
+int gameStatus=MAIN_MENU;
 
 // Отображаемые символы
 char gameFields[32];     // Игровое поле
@@ -40,32 +30,10 @@ long startGameTime;      // Время начала игры
 long lastMovementTime;   // Последнее время обновления дисплея
 long lastChangeSpeedTime;// Последнее время изменения скорости
 long endGameTime;        // Время окончания игры
-long bestGameTime;       // Лучшее время
+long bestGameTime=0;       // Лучшее время
 int bestMetres = 0;      // наилучшее растояние
 bool topQueue = true;     // Параметр для алгоритма расстановки препятствий
 
-
-// Функция возвращает какая кнопка была нажата
-int getPressedButton()
-{
-  int buttonValue = analogRead(0);
-  if (buttonValue < 100) {
-    return BUTTON_RIGHT;
-  }
-  else if (buttonValue < 200) {
-    return BUTTON_UP;
-  }
-  else if (buttonValue < 400){
-    return BUTTON_DOWN;
-  }
-  else if (buttonValue < 600){
-    return BUTTON_LEFT;
-  }
-  else if (buttonValue < 800){
-    return BUTTON_SELECT;
-  }
-  return BUTTON_NONE;
-}
 
 // Функция начинает новую игру
 void startGame()
@@ -205,11 +173,9 @@ void gameOver()
   // Вычисляем позицию игрока
     int playerPos = (gameFields[FIELD_WIDTH] == PLAYER)? FIELD_WIDTH:0;
   // Анимация проигрыша
-  for(byte i=3;i>0;i--){
   lcd.setCursor(playerPos%FIELD_WIDTH, playerPos/FIELD_WIDTH);
-  lcd.print(i);
-  delay(1000);  
-  }
+  lcd.print('X');
+  gameOverSound();
   lcd.clear();
   // Выводим статистику
   lcd.print("Time:");
@@ -247,9 +213,9 @@ void pause()
 
 void setup()
 {
-  gameStatus = MAIN_MENU;
-  button = BUTTON_NONE;
-  bestGameTime = 0;
+  pinMode(11,OUTPUT);digitalWrite(11,0);
+  pinMode(12,OUTPUT);digitalWrite(12,1);
+  gameOnSound();
   uint8_t simbol[8] =
 {
 0b11111,
@@ -274,7 +240,6 @@ uint8_t person[8] =
   0b10001,
 };
 lcd.createChar(2,person);
-  
   // Анимация первой загрузки
   lcd.begin(16, 2);
   lcd.setCursor(0, 0);              
@@ -282,7 +247,7 @@ lcd.createChar(2,person);
   for(byte i=0;i<23;i++){
     if(i==12)lcd.setCursor(0,1);
     lcd.print(start[i]);
-    delay(100);
+    delay(50);
   }
   lcd.print(char(2));
 }
@@ -328,30 +293,22 @@ void loop()
             break;
           // Перемещение в верхнюю строку
           case BUTTON_UP:
-            if (gameFields[0] == BAR)
+            if (gameFields[0] == BAR)gameOver(); 
+            else
             {
-               gameOver(); 
-            } else
-            {
+              personMoveSound();
               gameFields[0] = PLAYER;
-              if (gameFields[FIELD_WIDTH] == PLAYER)
-              {
-                gameFields[FIELD_WIDTH] = SPACE;
-              }
+              if (gameFields[FIELD_WIDTH] == PLAYER)gameFields[FIELD_WIDTH] = SPACE;
             }
             break;
           // Перемещение в нижнюю строку
           case BUTTON_DOWN:
-            if (gameFields[FIELD_WIDTH] == BAR)
-            {
-               gameOver(); 
-            } else
+            if (gameFields[FIELD_WIDTH] == BAR)gameOver();
+            else
             {
               gameFields[FIELD_WIDTH] = PLAYER;
-              if (gameFields[0] == PLAYER)
-              {
-                gameFields[0] = SPACE;
-              }
+              personMoveSound();
+              if (gameFields[0] == PLAYER)gameFields[0] = SPACE;
             }
             break;
        }
