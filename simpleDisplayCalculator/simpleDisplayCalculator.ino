@@ -37,26 +37,8 @@ int getPressedButton()
   return BUTTON_NONE;
 }
 
-int firstnum=0,secondnum=0;int znak=0;
+float firstnum=0,secondnum=0;byte znak=0;
 void loop(){
-  lcd.setCursor(0,1);
-  lcd.print("                ");
-  lcd.setCursor(0,1);
-  lcd.print(firstnum);
-  switch(znak){
-   case 0: lcd.print("+"); break;
-   case 1: lcd.print("-"); break;
-   case 2: lcd.print("/"); break;
-   case 3: lcd.print("*"); break;
-  }
-  lcd.print(secondnum);
-  lcd.print('=');
-  switch(znak){
-   case 0: lcd.print(firstnum+secondnum); break;
-   case 1: lcd.print(firstnum-secondnum); break;
-   case 2: lcd.print(firstnum/secondnum); break;
-   case 3: lcd.print(firstnum*secondnum); break;
-  }
   switch(getPressedButton()){
     case BUTTON_UP:
       firstnum++;
@@ -71,12 +53,28 @@ void loop(){
       secondnum++;
     break;
     case BUTTON_SELECT:
-      Serial.println("select");
       znak= (znak==3)? 0 : znak+1 ;
     break;
     case BUTTON_NONE:
-      
+      lcd.setCursor(0,1);
+      lcd.print("                ");
+      lcd.setCursor(0,1);
+      lcd.print((int)firstnum);
+      switch(znak){
+       case 0: lcd.print("+"); break;
+       case 1: lcd.print("-"); break;
+       case 2: lcd.print("/"); break;
+       case 3: lcd.print("*"); break;
+      }
+      lcd.print((int)secondnum);
+      lcd.print('=');
+      switch(znak){
+       case 0: lcd.print(firstnum+secondnum); break;
+       case 1: lcd.print(firstnum-secondnum); break;
+       case 2: lcd.print(firstnum/secondnum); break;
+       case 3: lcd.print(firstnum*secondnum); break;
+      }
     break;
   }
-  delay(100);
+  delay(70);
 }
