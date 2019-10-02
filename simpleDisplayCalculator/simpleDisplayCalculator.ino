@@ -14,6 +14,7 @@ void setup(){
 #define BUTTON_DOWN 3
 #define BUTTON_LEFT 4
 #define BUTTON_SELECT 5
+byte multiply=0;
 
 // Функция возвращает какая кнопка была нажата
 int getPressedButton()
@@ -41,21 +42,28 @@ float firstnum=0,secondnum=0;byte znak=0;
 void loop(){
   switch(getPressedButton()){
     case BUTTON_UP:
-      firstnum++;
+      multiply++;
+      firstnum+=(multiply>=10)? 10 : 1;
     break;
     case BUTTON_DOWN:
-      firstnum--;
+      multiply++;
+      firstnum-=(multiply>=10)? 10 : 1;
     break;
     case BUTTON_LEFT:
-      secondnum--;
+      multiply++;
+      secondnum-=(multiply>=10)? 10 : 1;
     break;
     case BUTTON_RIGHT:
-      secondnum++;
+      multiply++;
+      secondnum+=(multiply>=10)? 10 : 1;
     break;
     case BUTTON_SELECT:
       znak= (znak==3)? 0 : znak+1 ;
     break;
     case BUTTON_NONE:
+      multiply=0;
+    break;
+  }
       lcd.setCursor(0,1);
       lcd.print("                ");
       lcd.setCursor(0,1);
@@ -74,7 +82,11 @@ void loop(){
        case 2: lcd.print(firstnum/secondnum); break;
        case 3: lcd.print(firstnum*secondnum); break;
       }
-    break;
-  }
-  delay(70);
+      if(firstnum>=2000){//pashal
+        lcd.clear();    //egg
+        lcd.print("BOOM IN");
+        for(byte i=7;i>=0;i--){lcd.print(i);lcd.print('.');delay(1000);}
+        return;
+      }
+  delay(200);
 }
