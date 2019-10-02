@@ -1,8 +1,10 @@
 #include "Adafruit_NeoPixel.h"
+
 #define PIXELS 60 // count of pixels in the lent | кол-во пикселей в ленте
 #define PIN 8 //pin with the adress lent | пин с адресной лентой
+#define BUTTON 3//pin with button,do not change!
 #define BRIGHTNESS 150 //<255!!!!
-#define MODE 6 // the mode | режим
+int MODE = 3; // the mode | режим
 /*  The random mode is | случайный режим задается 
     random(0,7)
 */
@@ -14,8 +16,14 @@ void fillRange(byte from, byte to, uint32_t color=pix.Color(0,0,0)){
   }
 }
 
+void onButton(){
+  MODE++;
+  if(MODE==7)MODE=0;
+}
+
 void setup(){
   Serial.begin(9600);
+  attachInterrupt(1,onButton,RISING);
   pix.begin();
   pix.setBrightness(BRIGHTNESS);
   pix.show();
@@ -23,14 +31,13 @@ void setup(){
 
 void loop(){
    uint32_t color = pix.Color(random(0,255),random(0,255),random(0,255));
-   int a=MODE;
    if(Serial.available()){
-     a=Serial.read()-'0';
+     MODE=Serial.read()-'0';
      Serial.print("The mode number ");
-     Serial.print(a);
+     Serial.print(MODE);
      Serial.println(" accepted!");
    }
-   switch (a){
+   switch (MODE){
      case 0://snake | змейка
        for(byte i=0; i<PIXELS; i++){
          pix.setPixelColor(i,color);
@@ -67,7 +74,7 @@ void loop(){
          for(byte j=0; j<i; j++){
            pix.setPixelColor(j,color);
            pix.show();
-           delay(5);
+           delay(3);
            pix.setPixelColor(j,0,0,0);
            pix.show();
          }
@@ -106,17 +113,19 @@ void loop(){
        pix.setBrightness(BRIGHTNESS);
      break;
      case 6://rainbow | радуга
-       for(long firstPixelHue = 0; firstPixelHue < 5*65536; firstPixelHue += 256) {
+       for(long firstPixelHue = 0; firstPixelHue < 5*65536; firstPixelHue += 512) {
          for(int i=0; i<PIXELS; i++) {
            int pixelHue = firstPixelHue + (i * 65536L / PIXELS);
            pix.setPixelColor(i, pix.gamma32(pix.ColorHSV(pixelHue)));
          }
          pix.show();
-         delay(5);
        }
      break;
      default:
        Serial.println("No such mode(");
      break;
    }
+   Serial.print(" the MODE ");
+   Serial.print(MODE);
+   Serial.println(" played");
 }
