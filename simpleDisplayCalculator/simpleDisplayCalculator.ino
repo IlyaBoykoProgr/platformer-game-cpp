@@ -82,11 +82,12 @@ void loop(){
        case 2: lcd.print(firstnum/secondnum); break;
        case 3: lcd.print(firstnum*secondnum); break;
       }
-      if(firstnum>=2000){//pashal
+      if(firstnum>=1000){//pashal
         lcd.clear();    //egg
         lcd.print("BOOM IN");
+        lcd.setCursor(0,1);
         for(byte i=7;i>=0;i--){lcd.print(i);lcd.print('.');delay(1000);}
-        return;
+        for(;;){lcd.clear();lcd.print(random(0,99999));delay(200);}
       }
   delay(200);
 }
