@@ -4,9 +4,9 @@
 #define PIN 8 //pin with the adress lent | пин с адресной лентой
 #define BUTTON 3//pin with button,do not change!
 #define BRIGHTNESS 150 //<255!!!!
-int MODE = 3; // the mode | режим
+#define MODE random(0,8) // the mode | режим
 /*  The random mode is | случайный режим задается 
-    random(0,7)
+    random(0,8)
 */
 Adafruit_NeoPixel pix(PIXELS,PIN);
 
@@ -16,12 +16,14 @@ void fillRange(byte from, byte to, uint32_t color=pix.Color(0,0,0)){
   }
 }
 
+short mode;
 void onButton(){
-  MODE++;
-  if(MODE==7)MODE=0;
+  mode++;
+  if(mode==8)mode=0;
 }
 
 void setup(){
+  mode=MODE;
   Serial.begin(9600);
   attachInterrupt(1,onButton,RISING);
   pix.begin();
@@ -32,12 +34,12 @@ void setup(){
 void loop(){
    uint32_t color = pix.Color(random(0,255),random(0,255),random(0,255));
    if(Serial.available()){
-     MODE=Serial.read()-'0';
+     mode=Serial.read()-'0';
      Serial.print("The mode number ");
-     Serial.print(MODE);
+     Serial.print(mode);
      Serial.println(" accepted!");
    }
-   switch (MODE){
+   switch (mode){
      case 0://snake | змейка
        for(byte i=0; i<PIXELS; i++){
          pix.setPixelColor(i,color);
@@ -74,7 +76,7 @@ void loop(){
          for(byte j=0; j<i; j++){
            pix.setPixelColor(j,color);
            pix.show();
-           delay(3);
+           delay(2);
            pix.setPixelColor(j,0,0,0);
            pix.show();
          }
@@ -121,11 +123,20 @@ void loop(){
          pix.show();
        }
      break;
+     case 7://random pixels| рандомные пиксели
+       pix.clear();
+       for(short i=0;i<PIXELS;i++){
+         short randpix=rand()%PIXELS;
+         if(pix.getPixelColor(randpix) !=0){i--;continue;}
+         pix.setPixelColor(randpix,color);
+         pix.show();delay(40);
+       }
+     break;
      default:
        Serial.println("No such mode(");
      break;
    }
    Serial.print(" the MODE ");
-   Serial.print(MODE);
+   Serial.print(mode);
    Serial.println(" played");
 }
