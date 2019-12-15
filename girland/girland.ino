@@ -2,11 +2,10 @@
 
 #define PIXELS 60 // count of pixels in the lent | кол-во пикселей в ленте
 #define PIN 8 //pin with the adress lent | пин с адресной лентой
-#define BUTTON 3//pin with button,do not change!
-#define BRIGHTNESS 150 //<255!!!!
-#define MODE random(0,8) // the mode | режим
+#define BRIGHTNESS 120 //<255!!!!
+#define MODE -1 // the mode | режим
 /*  The random mode is | случайный режим задается 
-    random(0,8)
+    -1
 */
 Adafruit_NeoPixel pix(PIXELS,PIN);
 
@@ -17,22 +16,19 @@ void fillRange(byte from, byte to, uint32_t color=pix.Color(0,0,0)){
 }
 
 short mode;
-void onButton(){
-  mode++;
-  if(mode==8)mode=0;
-}
 
 void setup(){
-  mode=MODE;
-  Serial.begin(9600);
-  attachInterrupt(1,onButton,RISING);
   pix.begin();
   pix.setBrightness(BRIGHTNESS);
   pix.show();
+  pinMode(A5,INPUT);
+  randomSeed(analogRead(A5));
 }
 
 void loop(){
    uint32_t color = pix.Color(random(0,255),random(0,255),random(0,255));
+   mode=MODE;
+   if(mode<0)mode=random(9);
    if(Serial.available()){
      mode=Serial.read()-'0';
      Serial.print("The mode number ");
@@ -48,12 +44,13 @@ void loop(){
        }
      break;
      case 1:{//double snake | двойная змейка
-       byte i=random(0,2);
-       for(i; i<PIXELS; i+=2){
+       uint32_t color2=pix.Color(random(0,255),random(0,255),random(0,255));
+       for(byte i=0;i<PIXELS;i++){
          pix.setPixelColor(i,color);
+         pix.setPixelColor(PIXELS-i,color2);
+         pix.show();
+         delay(20);
        }
-       pix.show();
-       delay(600);
      }
      break;
      case 2://moving line | бегающая линия
@@ -115,7 +112,7 @@ void loop(){
        pix.setBrightness(BRIGHTNESS);
      break;
      case 6://rainbow | радуга
-       for(long firstPixelHue = 0; firstPixelHue < 5*65536; firstPixelHue += 512) {
+       for(long firstPixelHue = 0; firstPixelHue < 65536; firstPixelHue += 256) {
          for(int i=0; i<PIXELS; i++) {
            int pixelHue = firstPixelHue + (i * 65536L / PIXELS);
            pix.setPixelColor(i, pix.gamma32(pix.ColorHSV(pixelHue)));
@@ -124,12 +121,12 @@ void loop(){
        }
      break;
      case 7://random pixels| рандомные пиксели
-       pix.clear();
        for(short i=0;i<PIXELS;i++){
          short randpix=rand()%PIXELS;
          if(pix.getPixelColor(randpix) !=0){i--;continue;}
          pix.setPixelColor(randpix,color);
-         pix.show();delay(40);
+         pix.show();
+         delay(40);
        }
      break;
      default:
