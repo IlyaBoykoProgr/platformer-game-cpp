@@ -121,6 +121,7 @@ void loop(){
        }
      break;
      case 7://random pixels| рандомные пиксели
+       pix.clear();
        for(short i=0;i<PIXELS;i++){
          short randpix=rand()%PIXELS;
          if(pix.getPixelColor(randpix) !=0){i--;continue;}
