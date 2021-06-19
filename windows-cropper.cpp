@@ -4,9 +4,9 @@
 #include <math.h>
 using namespace std;
 
-#define HIGH_QUALITY 1
-#define LIST_COUNT 16
+#define HIGH_QUALITY 0
 ///always need to be the list's members count
+#define LIST_COUNT 16
 string list[]={
     "CabinetWClass", "UnityWndClass", "#32770", "Chrome_WidgetWin_1",
     "PPTFrameClass", "vguiPopupWindow", "XLMAIN", "OpusApp", "MMCMainFrame",
